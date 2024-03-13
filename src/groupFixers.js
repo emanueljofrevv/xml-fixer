@@ -1,3 +1,5 @@
+const { addToReport } = require("./report");
+
 /* -------------------------------------------------------------------------- */
 /*                               HELPER FUNCTION                              */
 /* -------------------------------------------------------------------------- */
@@ -84,7 +86,10 @@ function hasAdminOverride(groupName, groupConditions, form) {
   });
 
   if (!hasOverride) {
-    console.log(`Group ${groupName} does not have an admin override`);
+    addToReport(
+      `#### ${groupName}`,
+      `Group ${groupName} does not have an admin override`,
+    );
   }
 }
 
@@ -103,7 +108,7 @@ function isFieldInMoreThanOneGroup(fields, form) {
   });
 
   duplicatedFields.forEach((value, key) => {
-    console.log(`Field ${key} is in more than one group`);
+    addToReport(`#### ${key}`, `Field ${key} is in more than one group`);
   });
 }
 
@@ -114,6 +119,7 @@ function isFieldInMoreThanOneGroup(fields, form) {
 function fixGroupsAndConditions(form) {
   const groups = getGroups(form);
   const allGroupsFields = getAllGroupsFields(groups);
+  addToReport("## Groups and Conditions", "");
 
   isFieldInMoreThanOneGroup(allGroupsFields, form);
 

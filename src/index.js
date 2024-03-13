@@ -2,6 +2,7 @@ const fs = require("fs");
 const xml2js = require("xml2js");
 const fixFields = require("./fieldFixers");
 const fixGroupsAndConditions = require("./groupFixers");
+const { report } = require("./report");
 
 /* -------------------------------------------------------------------------- */
 /*                              CONFIG VARIABLES                              */
@@ -73,6 +74,25 @@ function getAllXMLFilesPaths(path) {
   });
 }
 
+function printReport(report) {
+  let md = ``;
+
+  report.forEach((value, key) => {
+    md += `${key}\n`;
+    value.forEach((msg, i) => {
+      if (msg) {
+        md += `${i + 1}. ${msg}\n`;
+      }
+    });
+  });
+
+  fs.writeFile("./src/xml/output/report.md", md, (err) => {
+    if (err) {
+      console.log(err);
+    }
+  });
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                    MAIN                                    */
 /* -------------------------------------------------------------------------- */
@@ -83,9 +103,11 @@ async function main() {
   const jsonData = await convertXmlToJson(xmlData);
 
   // Apply fixes to the JSON object
-  // jsonData.FormEntity = fixFields(jsonData.FormEntity);
+  jsonData.FormEntity = fixFields(jsonData.FormEntity);
 
   fixGroupsAndConditions(jsonData.FormEntity);
+
+  printReport(report);
 
   // Convert the result object back to XML
   const xml = convertJsonToXml(jsonData);

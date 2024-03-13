@@ -3,12 +3,12 @@
 /* eslint-disable no-param-reassign */
 const nspell = require("nspell");
 const fs = require("fs");
+const { addToReport } = require("./report");
 
 /* -------------------------------------------------------------------------- */
 /*                              GLOBAL VARIABLES                              */
 /* -------------------------------------------------------------------------- */
 
-const report = new Map();
 const fixAccessibility = false;
 const fixCase = false;
 const fixTabOrder = false;
@@ -35,11 +35,14 @@ function checkAccessibility(form, pIndex, fieldIndex, fix = false) {
       ].AccessibilityLabel[0] = newAccessibilityLabel;
 
       addToReport(
-        fieldName,
+        `#### ${fieldName}`,
         `Accessibility label for [${fieldName}] was set to [${newAccessibilityLabel}]`,
       );
     } else {
-      addToReport(fieldName, `Field [${fieldName}] has no accessibility label`);
+      addToReport(
+        `#### ${fieldName}`,
+        `Field [${fieldName}] has no accessibility label`,
+      );
     }
   }
   return form;
@@ -54,7 +57,7 @@ function fieldNameCaseFixer(form, pIndex, fieldIndex, fix) {
     ].Name[0] = titleCaseFieldName;
 
     addToReport(
-      fieldName,
+      `#### ${fieldName}`,
       `Field [${fieldName}] was changed to [${titleCaseFieldName}]`,
     );
   }
@@ -135,7 +138,10 @@ function hasDefaultText(field) {
   }
 
   if (isDefaultText) {
-    addToReport(fieldName, `Field [${field.Name[0]}] has a default text`);
+    addToReport(
+      `#### ${fieldName}`,
+      `Field [${field.Name[0]}] has a default text`,
+    );
   }
 
   return isDefaultText;
@@ -145,7 +151,7 @@ function hasDefaultName(fieldName) {
   const isDefaultName = fieldName.includes("DataField");
 
   if (isDefaultName) {
-    addToReport(fieldName, `Field [${fieldName}] has a default name`);
+    addToReport(`#### ${fieldName}`, `Field [${fieldName}] has a default name`);
   }
 
   return isDefaultName;
@@ -160,7 +166,10 @@ function checkDistanceToBorder(form, field) {
   );
 
   if (distanceToRightBorder < 30) {
-    addToReport(fieldName, `Field [${fieldName}] is too close to the border`);
+    addToReport(
+      `#### ${fieldName}`,
+      `Field [${fieldName}] is too close to the border`,
+    );
   }
 }
 
@@ -174,42 +183,19 @@ function checkTabOrder(form, field, pageIndex, fieldIndex) {
         fieldIndex
       ].TabOrder[0] = 0;
 
-      addToReport(fieldName, `Field [${fieldName}] Tab Order was set to 0`);
+      addToReport(
+        `#### ${fieldName}`,
+        `Field [${fieldName}] Tab Order was set to 0`,
+      );
     } else {
       addToReport(
-        fieldName,
+        `#### ${fieldName}`,
         `Field [${fieldName}] has a Tab Order different than 0`,
       );
     }
   }
 
   return form;
-}
-
-function addToReport(fieldName, msg) {
-  if (!report.has(fieldName)) {
-    report.set(fieldName, [msg]);
-    console.log();
-  } else {
-    const reportedField = report.get(fieldName);
-    reportedField.push(msg);
-  }
-}
-
-function printReport() {
-  console.log("-------------------------------------------------");
-  console.log("REPORT");
-  console.log("-------------------------------------------------");
-  console.log("Total fields with possible issues:", report.size);
-  console.log("-------------------------------------------------");
-
-  report.forEach((value, key) => {
-    console.log("FIELD:", key);
-    value.forEach((msg, i) => {
-      console.log(`${i + 1}. `, msg);
-    });
-    console.log("-------------------------------------------------");
-  });
 }
 
 function isLabelOverlaping(field, fields) {
@@ -225,7 +211,7 @@ function isLabelOverlaping(field, fields) {
 
     if (fieldTop === lblTop && fieldLeft < lblRight && fieldLeft > lblLeft) {
       addToReport(
-        fieldName,
+        `#### ${fieldName}`,
         `Field [${fieldName}] is overlapping with a label`,
       );
     }
@@ -237,19 +223,20 @@ function isTitleCase(str) {
   const words = str.split(" ");
 
   // Check each word to see if it follows the Title Case pattern
-  for (let i = 0; i < words.length; i + 1) {
+  words.forEach((word) => {
     // Check if the word is not empty (to handle multiple spaces)
-    if (words[i]) {
+    if (word) {
       // If the first letter is not uppercase or the rest of the word has any uppercase letter, return false
       if (
-        words[i][0] !== words[i][0].toUpperCase() ||
-        words[i].slice(1) !== words[i].slice(1).toLowerCase()
+        word[0] !== word[0].toUpperCase() ||
+        word.slice(1) !== word.slice(1).toLowerCase()
       ) {
         addToReport(str, `Field [${str}] is not in Title Case`);
         return false;
       }
     }
-  }
+    return true;
+  });
 
   // If all words follow the Title Case pattern, return true
   return true;
@@ -282,7 +269,7 @@ function hasSpellingError(fieldName) {
         suggestedWords.length > 0 ? suggestedWords : "No suggestions";
 
       addToReport(
-        fieldName,
+        `#### ${fieldName}`,
         `Possible misspeled word: ${word}. Manually check accessibility label.
         Suggested spellings: ${suggestionMsg}`,
       );
@@ -374,6 +361,7 @@ function fixContainer(form, pIndex, fieldIndex) {
   const fields = getFields(form, pIndex);
   const field = fields[fieldIndex];
   const fieldID = field.ID[0];
+  const fieldName = field.Name[0];
   const responsiveFlow = field.ResponsiveFlow[0];
   const hasMoreThan1field =
     fields.filter((f) => f.ContainerId[0] === fieldID).length > 1;
@@ -385,13 +373,13 @@ function fixContainer(form, pIndex, fieldIndex) {
         fieldIndex
       ].ResponsiveFlow[0] = oneColumnResponsiveFlow;
       addToReport(
-        field.Name[0],
-        `Container [${field.Name[0]}] has been set to 1 column flow`,
+        `#### ${fieldName}`,
+        `Container [${fieldName}] has been set to 1 column flow`,
       );
     } else {
       addToReport(
-        field.Name[0],
-        `Container [${field.Name[0]}] has more than 1 field and is not set to 1 column flow`,
+        `#### ${fieldName}`,
+        `Container [${fieldName}] has more than 1 field and is not set to 1 column flow`,
       );
     }
   }
@@ -483,51 +471,54 @@ function fixUploadButton(form, pIndex, fieldIndex) {}
 /* -------------------------------------------------------------------------- */
 
 function fixFields(form) {
-  // Iterate over each form page
-  form.FormPages.forEach(({ FormPage }, pageIndex) => {
-    const fields = FormPage[pageIndex].FieldList[0].BaseField;
+  try {
+    addToReport("## Fields", "");
+    // Iterate over each form page
+    form.FormPages.forEach(({ FormPage }, pageIndex) => {
+      const fields = FormPage[pageIndex].FieldList[0].BaseField;
 
-    // Iterate over each field in the page
-    fields.forEach((field, fieldIndex) => {
-      const fieldType = field.$["xsi:type"];
+      // Iterate over each field in the page
+      fields.forEach((field, fieldIndex) => {
+        const fieldType = field.$["xsi:type"];
 
-      if (fieldType !== "FieldContainer") {
-        form = checkTabOrder(form, field, pageIndex, fieldIndex);
-      }
+        if (fieldType !== "FieldContainer") {
+          form = checkTabOrder(form, field, pageIndex, fieldIndex);
+        }
 
-      const fieldActions = {
-        CellField: (f, i, j) => fixCell(f, i, j),
-        FieldCalendar3: (f, i, j) => fixCalendar(f, i, j),
-        FieldCheckbox: (f, i, j) => fixCheckbox(f, i, j),
-        FieldContainer: (f, i, j) => fixContainer(f, i, j),
-        FieldDataGrid: (f, i, j) => fixDataGrid(f, i, j),
-        FieldDropDownList3: (f, i, j) => fixDropdown(f, i, j),
-        FieldLabel: (f, i, j) => fixLabel(f, i, j),
-        FieldTextArea3: (f, i, j) => fixTextArea(f, i, j),
-        FieldTextbox3: (f, i, j) => fixTextbox(f, i, j),
-        FormButton: (f, i, j) => fixButton(f, i, j),
-        FormIDStamp: (f, i, j) => fixFormIDStamp(f, i, j),
-        ImageFormControl: (f, i, j) => fixImage(f, i, j),
-        RepeatingRowControl: (f, i, j) => fixRRC(f, i, j),
-        UploadButton: (f, i, j) => fixUploadButton(f, i, j),
-        UserIDStamp: (f, i, j) => fixSignatureStamp(f, i, j),
-      };
+        const fieldActions = {
+          CellField: (f, i, j) => fixCell(f, i, j),
+          FieldCalendar3: (f, i, j) => fixCalendar(f, i, j),
+          FieldCheckbox: (f, i, j) => fixCheckbox(f, i, j),
+          FieldContainer: (f, i, j) => fixContainer(f, i, j),
+          FieldDataGrid: (f, i, j) => fixDataGrid(f, i, j),
+          FieldDropDownList3: (f, i, j) => fixDropdown(f, i, j),
+          FieldLabel: (f, i, j) => fixLabel(f, i, j),
+          FieldTextArea3: (f, i, j) => fixTextArea(f, i, j),
+          FieldTextbox3: (f, i, j) => fixTextbox(f, i, j),
+          FormButton: (f, i, j) => fixButton(f, i, j),
+          FormIDStamp: (f, i, j) => fixFormIDStamp(f, i, j),
+          ImageFormControl: (f, i, j) => fixImage(f, i, j),
+          RepeatingRowControl: (f, i, j) => fixRRC(f, i, j),
+          UploadButton: (f, i, j) => fixUploadButton(f, i, j),
+          UserIDStamp: (f, i, j) => fixSignatureStamp(f, i, j),
+        };
 
-      const action = fieldActions[fieldType];
+        const action = fieldActions[fieldType];
 
-      // if (fieldType === "FieldTextbox3") {
-      //   if (action) {
-      //     form = action(form, pageIndex, fieldIndex) || form;
-      //   }
-      // }
+        // if (fieldType === "FieldTextbox3") {
+        //   if (action) {
+        //     form = action(form, pageIndex, fieldIndex) || form;
+        //   }
+        // }
 
-      if (action) {
-        form = action(form, pageIndex, fieldIndex) || form;
-      }
+        if (action) {
+          form = action(form, pageIndex, fieldIndex) || form;
+        }
+      });
     });
-  });
-  printReport();
-
+  } catch (error) {
+    console.log(error);
+  }
   return form;
 }
 

@@ -320,12 +320,10 @@ function fixCalendar(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
-    form = fixTitleCase(form, pIndex, fieldIndex);
-
-    if (isTitleCase(fieldName)) {
-      if (!hasSpellingError(fieldName)) {
-        form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
-      }
+    if (!isTitleCase(fieldName)) {
+      form = fixTitleCase(form, pIndex, fieldIndex);
+    } else if (!hasSpellingError(fieldName)) {
+      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
     }
   }
 

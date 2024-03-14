@@ -15,6 +15,7 @@ const fixCase = false;
 const fixTabOrder = false;
 const fixContainerResponsiveFlow = false;
 const PA_EXCEPTIONS = ["MPI", "ACT13", "PB22"];
+const WA_EXCEPTIONS = ["DP"];
 const titleCaseExceptions = [
   "ID",
   "SSN",
@@ -26,6 +27,7 @@ const titleCaseExceptions = [
   "POE",
   "CSV",
   ...PA_EXCEPTIONS,
+  ...WA_EXCEPTIONS,
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -50,12 +52,12 @@ function checkAccessibility(form, pIndex, fieldIndex, fix = false) {
 
       addToReport(
         `#### ${fieldName}`,
-        `Accessibility label for \`${fieldName}\` was set to \`${newAccessibilityLabel}\``,
+        `The \`Accessibility Label\` was set to \`${newAccessibilityLabel}\`.`,
       );
     } else {
       addToReport(
         `#### ${fieldName}`,
-        `Field \`${fieldName}\` has no accessibility label`,
+        `The field has no \`Accessibility Label\`.`,
       );
     }
   }
@@ -74,7 +76,7 @@ function fixTitleCase(form, pIndex, fieldIndex) {
 
     addToReport(
       `#### ${fieldName}`,
-      `Field \`${fieldName}\` was changed to \`${titleCaseFieldName}\``,
+      `The field name \`${fieldName}\` was changed to \`${titleCaseFieldName}\`.`,
     );
   }
 
@@ -136,11 +138,11 @@ function getFieldName(form, pIndex, fieldIndex) {
 
 function getPropertyValueByPropetyName(field, propertyName) {
   const hasPorperty = propertyName in field;
-  if(hasPorperty){
+  if (hasPorperty) {
     return field[propertyName][0];
-  }else{
-    throw new Error('propertyName not exist'); 
   }
+
+  throw new Error("propertyName not exist");
 }
 
 function getFields(form, pIndex) {
@@ -165,7 +167,7 @@ function hasDefaultText(field) {
   if (isDefaultText) {
     addToReport(
       `#### ${fieldName}`,
-      `Field \`${field.Name[0]}\` has a default text`,
+      `The field text \`${defaultText}\` has a default value.`,
     );
   }
 
@@ -178,7 +180,7 @@ function hasDefaultName(fieldName) {
   if (isDefaultName) {
     addToReport(
       `#### ${fieldName}`,
-      `Field \`${fieldName}\` has a default name`,
+      `The field name \`${fieldName}\` has a default value.`,
     );
   }
 
@@ -195,7 +197,7 @@ function checkDistanceToBorder(form, field) {
   if (distanceToRightBorder < 30) {
     addToReport(
       `#### ${fieldName}`,
-      `Field \`${fieldName}\` is too close to the border`,
+      `The field is less than 30px from the right border.`,
     );
   }
 }
@@ -210,14 +212,11 @@ function checkTabOrder(form, field, pageIndex, fieldIndex) {
         fieldIndex
       ].TabOrder[0] = 0;
 
-      addToReport(
-        `#### ${fieldName}`,
-        `Field \`${fieldName}\` Tab Order was set to 0`,
-      );
+      addToReport(`#### ${fieldName}`, `The field \`Tab Order\` was set to 0.`);
     } else {
       addToReport(
         `#### ${fieldName}`,
-        `Field \`${fieldName}\` has a Tab Order different than 0`,
+        `The field has a \`Tab Order\` value different than 0.`,
       );
     }
   }
@@ -238,11 +237,17 @@ function isLabelOverlaping(field, fields) {
     const fieldName = f.Name[0];
     const topAproxEqual = Math.abs(fieldTop - lblTop) <= 15;
     const borderAproxOverlap = lblRight - fieldLeft >= 5;
+    const isLabel = f.$["xsi:type"] === "FieldLabel";
 
-    if (topAproxEqual && borderAproxOverlap && fieldLeft > lblLeft) {
+    if (
+      !isLabel &&
+      topAproxEqual &&
+      borderAproxOverlap &&
+      fieldLeft > lblLeft
+    ) {
       addToReport(
         `#### ${fieldName}`,
-        `Field \`${fieldName}\` is overlapping with a label`,
+        `The field is overlapping with the label \`${labelName}\`.`,
       );
     }
   });
@@ -269,7 +274,7 @@ function isTitleCase(fieldName) {
         if (!includesException) {
           addToReport(
             `#### ${fieldName}`,
-            `Field \`${fieldName}\` is not in Title Case`,
+            `The field name \`${fieldName}\` is not in title case.`,
           );
           return false;
         }
@@ -312,8 +317,9 @@ function hasSpellingError(fieldName) {
 
       addToReport(
         `#### ${fieldName}`,
-        `Possible misspeled word: \`${word}\`. Manually check accessibility label.
-        Suggested spellings: \`${suggestionMsg}\``,
+        `Possible misspeled word: \`${word}\`.
+        Suggested spellings: \`${suggestionMsg}\`
+        Manually check accessibility label.`,
       );
 
       hasError = true;
@@ -413,12 +419,12 @@ function fixContainer(form, pIndex, fieldIndex) {
       ].ResponsiveFlow[0] = oneColumnResponsiveFlow;
       addToReport(
         `#### ${fieldName}`,
-        `Container \`${fieldName}\` has been set to 1 column flow`,
+        `The \`Responsive Flow\` of container \`${fieldName}\` has been set to \`1 Column\`.`,
       );
     } else {
       addToReport(
         `#### ${fieldName}`,
-        `Container \`${fieldName}\` has more than 1 field and is not set to 1 column flow`,
+        `The container has more than 1 field and its \`Responsive Flow\` is not set to \`1 Column\`.`,
       );
     }
   }
@@ -503,28 +509,26 @@ function fixTextbox(form, pIndex, fieldIndex) {
 function fixUploadButton(form, pIndex, fieldIndex) {
   const field = getFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
+  const isSimpleUpload =
+    getPropertyValueByPropetyName(field, "DisplayUploadedFiles") === "false";
 
-  //QAChecklist :: Upload Buttons :: Are all upload buttons configured for simple upload?
-  let isSimpleUpload = getPropertyValueByPropetyName(field, 'DisplayUploadedFiles') == 'false';
-
-  if(!isSimpleUpload){
-    if(fixSimpleUploadButton){
+  if (!isSimpleUpload) {
+    if (fixSimpleUploadButton) {
       form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
         fieldIndex
       ].DisplayUploadedFiles[0] = false;
-  
+
       addToReport(
         `#### ${fieldName}`,
-        `Field [${fieldName}] was changed to [${false}]`,
-      );      
+        `The field [${fieldName}] was changed to [${false}]`,
+      );
     }
 
     addToReport(
       `#### ${fieldName}`,
       `Field [${fieldName}] has DisplayUploadedFiles attribue in [${true}]`,
-    );    
-
-  } 
+    );
+  }
 
   return form;
 }

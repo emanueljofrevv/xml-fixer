@@ -119,14 +119,14 @@ function isFieldInMoreThanOneGroup(fields, form) {
 function fixGroupsAndConditions(form) {
   let groups = getGroups(form);
 
-  if(!groups){
+  if (!groups) {
     groups = [];
   }
 
   const allGroupsFields = getAllGroupsFields(groups) || [];
   addToReport("## Groups and Conditions", "");
 
-  if(groups.length == 0){
+  if (groups.length === 0) {
     addToReport(
       `#### The template hasn't groups`,
       `The template hasn't groups`,

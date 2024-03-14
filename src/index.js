@@ -2,31 +2,20 @@ const fs = require("fs");
 const xml2js = require("xml2js");
 const fixFields = require("./fieldFixers");
 const fixGroupsAndConditions = require("./groupFixers");
-const { report } = require("./report");
+const { addToReport, report } = require("./report");
 
 /* -------------------------------------------------------------------------- */
 /*                              CONFIG VARIABLES                              */
 /* -------------------------------------------------------------------------- */
 
 // XML file paths
-const inputXmlPath = "./src/xml/input/";
+const inputXmlFolderPath = "./src/xml/input/";
 const outputXmlPath = "./src/xml/output/form.xml";
+const reportPath = "./src/xml/output/";
 
 /* -------------------------------------------------------------------------- */
-/*                                FILE HANDLING                               */
+/*                              HELPER FUNCTIONS                              */
 /* -------------------------------------------------------------------------- */
-
-function readXmlFile(inputXmlPath) {
-  return new Promise((resolve, reject) => {
-    fs.readFile(inputXmlPath, "utf-8", (err, data) => {
-      if (err) {
-        reject(err);
-        return;
-      }
-      resolve(data);
-    });
-  });
-}
 
 function convertXmlToJson(data) {
   return new Promise((resolve, reject) => {
@@ -46,21 +35,30 @@ function convertJsonToXml(json) {
   return xml;
 }
 
-function writeFile(outputXmlPath, xml) {
-  return new Promise((resolve, reject) => {
-    // Write the XML back to the file
-    fs.writeFile(outputXmlPath, xml, (err) => {
-      if (err) {
-        reject(err);
-        return;
+function printReport(log) {
+  let markdown = ``;
+
+  log.forEach((value, key) => {
+    // Add the subheader
+    markdown += `${key}\n`;
+    value.forEach((msg, i) => {
+      if (msg) {
+        // Add the message
+        markdown += `${i + 1}. ${msg}\n`;
       }
-      console.log("The file has been saved!");
-      resolve();
     });
   });
+
+  const mdPath = `${reportPath}report_${new Date().getTime()}.md`;
+
+  return writeFile(mdPath, markdown);
 }
 
-function getAllXMLFilesPaths(path) {
+/* -------------------------------------------------------------------------- */
+/*                                FILE HANDLING                               */
+/* -------------------------------------------------------------------------- */
+
+function getAllXMLFilePaths(path) {
   return new Promise((resolve, reject) => {
     fs.readdir(path, (err, files) => {
       if (err) {
@@ -74,22 +72,29 @@ function getAllXMLFilesPaths(path) {
   });
 }
 
-function printReport(report) {
-  let md = ``;
-
-  report.forEach((value, key) => {
-    md += `${key}\n`;
-    value.forEach((msg, i) => {
-      if (msg) {
-        md += `${i + 1}. ${msg}\n`;
+function readXmlFile(inputXmlPath) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(inputXmlPath, "utf-8", (err, data) => {
+      if (err) {
+        reject(err);
+        return;
       }
+      resolve(data);
     });
   });
+}
 
-  fs.writeFile("./src/xml/output/report.md", md, (err) => {
-    if (err) {
-      console.log(err);
-    }
+function writeFile(path, content) {
+  return new Promise((resolve, reject) => {
+    // Write the file
+    fs.writeFile(path, content, (err) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      console.log("The file has been saved!");
+      resolve();
+    });
   });
 }
 
@@ -98,20 +103,27 @@ function printReport(report) {
 /* -------------------------------------------------------------------------- */
 
 async function main() {
-  const filePaths = await getAllXMLFilesPaths("./src/xml/input");
-  const xmlData = await readXmlFile(inputXmlPath + filePaths[0]);
-  const jsonData = await convertXmlToJson(xmlData);
+  const filePaths = await getAllXMLFilePaths("./src/xml/input");
 
-  // Apply fixes to the JSON object
-  jsonData.FormEntity = fixFields(jsonData.FormEntity);
+  filePaths.forEach(async (path) => {
+    const xmlData = await readXmlFile(inputXmlFolderPath + path);
+    const jsonData = await convertXmlToJson(xmlData);
+    const formEntity = jsonData.FormEntity;
 
-  fixGroupsAndConditions(jsonData.FormEntity);
+    // Add the report header
+    addToReport("# Report", "");
 
-  printReport(report);
+    // Analyze the XML and fix the fields
+    jsonData.FormEntity = fixFields(formEntity);
+    fixGroupsAndConditions(formEntity);
 
-  // Convert the result object back to XML
-  const xml = convertJsonToXml(jsonData);
-  await writeFile(outputXmlPath, xml);
+    // Convert the JSON back to XML
+    const xml = convertJsonToXml(jsonData);
+
+    // Create files
+    await printReport(report);
+    await writeFile(outputXmlPath, xml);
+  });
 
   console.log("finished!");
 }

@@ -10,9 +10,9 @@ const { addToReport, report, clearReport } = require("./report");
 /* -------------------------------------------------------------------------- */
 
 // XML file paths
-const inputXmlFolderPath = "./public/xml/input/";
-const outputXmlPath = "./public/xml/output/";
-const outputReportPath = "./public/xml/output/";
+const inputXmlFolderPath = "./public/input/";
+const outputXmlPath = "./public/output/";
+const outputReportPath = "./public/output/";
 
 /* -------------------------------------------------------------------------- */
 /*                                FILE HANDLING                               */

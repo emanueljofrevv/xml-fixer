@@ -20,7 +20,7 @@ function getAllGroupsFields(groups) {
   const fields = [];
 
   groups.forEach((group) => {
-    const groupFields = group.FieldCollection[0].FieldMember;
+    const groupFields = group.FieldCollection[0].FieldMember || [];
     fields.push(...groupFields);
   });
 

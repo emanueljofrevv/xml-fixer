@@ -10,9 +10,9 @@ const { addToReport, report, clearReport } = require("./report");
 /* -------------------------------------------------------------------------- */
 
 // XML file paths
-const inputXmlFolderPath = "./src/xml/input/";
-const outputXmlPath = "./src/xml/output/";
-const outputReportPath = "./src/xml/output/";
+const inputXmlFolderPath = "./public/xml/input/";
+const outputXmlPath = "./public/xml/output/";
+const outputReportPath = "./public/xml/output/";
 
 /* -------------------------------------------------------------------------- */
 /*                                FILE HANDLING                               */
@@ -126,7 +126,7 @@ async function processXmlFile(path) {
 /* -------------------------------------------------------------------------- */
 
 async function main() {
-  const filePaths = await getAllXMLFilePaths("./src/xml/input");
+  const filePaths = await getAllXMLFilePaths(inputXmlFolderPath);
 
   for (const path of filePaths) {
     // eslint-disable-next-line no-await-in-loop

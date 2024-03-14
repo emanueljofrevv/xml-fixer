@@ -88,7 +88,7 @@ function hasAdminOverride(groupName, groupConditions, form) {
   if (!hasOverride) {
     addToReport(
       `#### ${groupName}`,
-      `Group ${groupName} does not have an admin override`,
+      `Group \`${groupName}\` does not have an admin override`,
     );
   }
 }
@@ -108,7 +108,7 @@ function isFieldInMoreThanOneGroup(fields, form) {
   });
 
   duplicatedFields.forEach((value, key) => {
-    addToReport(`#### ${key}`, `Field ${key} is in more than one group`);
+    addToReport(`#### ${key}`, `Field \`${key}\` is in more than one group`);
   });
 }
 

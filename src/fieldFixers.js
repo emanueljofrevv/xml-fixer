@@ -46,12 +46,12 @@ function checkAccessibility(form, pIndex, fieldIndex, fix = false) {
 
       addToReport(
         `#### ${fieldName}`,
-        `Accessibility label for [${fieldName}] was set to [${newAccessibilityLabel}]`,
+        `Accessibility label for \`${fieldName}\` was set to \`${newAccessibilityLabel}\``,
       );
     } else {
       addToReport(
         `#### ${fieldName}`,
-        `Field [${fieldName}] has no accessibility label`,
+        `Field \`${fieldName}\` has no accessibility label`,
       );
     }
   }
@@ -70,7 +70,7 @@ function fixTitleCase(form, pIndex, fieldIndex) {
 
     addToReport(
       `#### ${fieldName}`,
-      `Field [${fieldName}] was changed to [${titleCaseFieldName}]`,
+      `Field \`${fieldName}\` was changed to \`${titleCaseFieldName}\``,
     );
   }
 
@@ -152,7 +152,7 @@ function hasDefaultText(field) {
   if (isDefaultText) {
     addToReport(
       `#### ${fieldName}`,
-      `Field [${field.Name[0]}] has a default text`,
+      `Field \`${field.Name[0]}\` has a default text`,
     );
   }
 
@@ -163,7 +163,10 @@ function hasDefaultName(fieldName) {
   const isDefaultName = fieldName.includes("DataField");
 
   if (isDefaultName) {
-    addToReport(`#### ${fieldName}`, `Field [${fieldName}] has a default name`);
+    addToReport(
+      `#### ${fieldName}`,
+      `Field \`${fieldName}\` has a default name`,
+    );
   }
 
   return isDefaultName;
@@ -180,7 +183,7 @@ function checkDistanceToBorder(form, field) {
   if (distanceToRightBorder < 30) {
     addToReport(
       `#### ${fieldName}`,
-      `Field [${fieldName}] is too close to the border`,
+      `Field \`${fieldName}\` is too close to the border`,
     );
   }
 }
@@ -197,12 +200,12 @@ function checkTabOrder(form, field, pageIndex, fieldIndex) {
 
       addToReport(
         `#### ${fieldName}`,
-        `Field [${fieldName}] Tab Order was set to 0`,
+        `Field \`${fieldName}\` Tab Order was set to 0`,
       );
     } else {
       addToReport(
         `#### ${fieldName}`,
-        `Field [${fieldName}] has a Tab Order different than 0`,
+        `Field \`${fieldName}\` has a Tab Order different than 0`,
       );
     }
   }
@@ -227,7 +230,7 @@ function isLabelOverlaping(field, fields) {
     if (topAproxEqual && borderAproxOverlap && fieldLeft > lblLeft) {
       addToReport(
         `#### ${fieldName}`,
-        `Field [${fieldName}] is overlapping with a label`,
+        `Field \`${fieldName}\` is overlapping with a label`,
       );
     }
   });
@@ -254,7 +257,7 @@ function isTitleCase(fieldName) {
         if (!includesException) {
           addToReport(
             `#### ${fieldName}`,
-            `Field [${fieldName}] is not in Title Case`,
+            `Field \`${fieldName}\` is not in Title Case`,
           );
           return false;
         }
@@ -295,8 +298,8 @@ function hasSpellingError(fieldName) {
 
       addToReport(
         `#### ${fieldName}`,
-        `Possible misspeled word: ${word}. Manually check accessibility label.
-        Suggested spellings: ${suggestionMsg}`,
+        `Possible misspeled word: \`${word}\`. Manually check accessibility label.
+        Suggested spellings: \`${suggestionMsg}\``,
       );
 
       hasError = true;
@@ -393,12 +396,12 @@ function fixContainer(form, pIndex, fieldIndex) {
       ].ResponsiveFlow[0] = oneColumnResponsiveFlow;
       addToReport(
         `#### ${fieldName}`,
-        `Container [${fieldName}] has been set to 1 column flow`,
+        `Container \`${fieldName}\` has been set to 1 column flow`,
       );
     } else {
       addToReport(
         `#### ${fieldName}`,
-        `Container [${fieldName}] has more than 1 field and is not set to 1 column flow`,
+        `Container \`${fieldName}\` has more than 1 field and is not set to 1 column flow`,
       );
     }
   }

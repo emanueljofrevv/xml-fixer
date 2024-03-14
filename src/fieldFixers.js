@@ -22,6 +22,7 @@ const titleCaseExceptions = [
   "POC",
   "POI",
   "POE",
+  "MPI",
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -291,7 +292,9 @@ function hasSpellingError(fieldName) {
 
   words.forEach((word) => {
     const isValid = spellchecker.correct(word);
-    if (!isValid) {
+    const isException = titleCaseExceptions.some((exc) => word.includes(exc));
+
+    if (!isValid && !isException) {
       const suggestedWords = spellchecker.suggest(word);
       const suggestionMsg =
         suggestedWords.length > 0 ? suggestedWords : "No suggestions";
@@ -335,7 +338,8 @@ function fixCalendar(form, pIndex, fieldIndex) {
   if (!hasDefaultName(fieldName)) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
-    } else if (!hasSpellingError(fieldName)) {
+    }
+    if (!hasSpellingError(fieldName)) {
       form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
     }
   }
@@ -352,7 +356,8 @@ function fixCell(form, pIndex, fieldIndex) {
   if (!hasDefaultName(fieldName)) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
-    } else if (!hasSpellingError(fieldName)) {
+    }
+    if (!hasSpellingError(fieldName)) {
       form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
     }
   }
@@ -370,7 +375,8 @@ function fixCheckbox(form, pIndex, fieldIndex) {
   if (!hasDefaultName(fieldName)) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
-    } else if (!hasSpellingError(fieldName)) {
+    }
+    if (!hasSpellingError(fieldName)) {
       form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
     }
   }
@@ -420,7 +426,8 @@ function fixDropdown(form, pIndex, fieldIndex) {
   if (!hasDefaultName(fieldName)) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
-    } else if (!hasSpellingError(fieldName)) {
+    }
+    if (!hasSpellingError(fieldName)) {
       form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
     }
   }
@@ -455,7 +462,8 @@ function fixTextArea(form, pIndex, fieldIndex) {
   if (!hasDefaultName(fieldName)) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
-    } else if (!hasSpellingError(fieldName)) {
+    }
+    if (!hasSpellingError(fieldName)) {
       form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
     }
   }
@@ -472,7 +480,8 @@ function fixTextbox(form, pIndex, fieldIndex) {
   if (!hasDefaultName(fieldName)) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
-    } else if (!hasSpellingError(fieldName)) {
+    }
+    if (!hasSpellingError(fieldName)) {
       form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
     }
   }

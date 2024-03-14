@@ -9,6 +9,7 @@ const { addToReport } = require("./report");
 /*                              GLOBAL VARIABLES                              */
 /* -------------------------------------------------------------------------- */
 
+const fixSimpleUploadButton = true;
 const fixAccessibility = false;
 const fixCase = false;
 const fixTabOrder = false;
@@ -131,6 +132,15 @@ function getFieldName(form, pIndex, fieldIndex) {
   const field = fields[fieldIndex];
   const fieldName = field.Name[0];
   return fieldName;
+}
+
+function getPropertyValueByPropetyName(field, propertyName) {
+  const hasPorperty = propertyName in field;
+  if(hasPorperty){
+    return field[propertyName][0];
+  }else{
+    throw new Error('propertyName not exist'); 
+  }
 }
 
 function getFields(form, pIndex) {
@@ -494,7 +504,30 @@ function fixTextbox(form, pIndex, fieldIndex) {
 function fixUploadButton(form, pIndex, fieldIndex) {
   const field = getFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
-  console.log("fixUploadButton");
+
+  //QAChecklist :: Upload Buttons :: Are all upload buttons configured for simple upload?
+  let isSimpleUpload = getPropertyValueByPropetyName(field, 'DisplayUploadedFiles') == 'false';
+
+  if(!isSimpleUpload){
+    if(fixSimpleUploadButton){
+      form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
+        fieldIndex
+      ].DisplayUploadedFiles[0] = false;
+  
+      addToReport(
+        `#### ${fieldName}`,
+        `Field [${fieldName}] was changed to [${false}]`,
+      );      
+    }
+
+    addToReport(
+      `#### ${fieldName}`,
+      `Field [${fieldName}] has DisplayUploadedFiles attribue in [${true}]`,
+    );    
+
+  } 
+
+  return form;
 }
 
 /* -------------------------------------------------------------------------- */

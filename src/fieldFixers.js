@@ -179,9 +179,8 @@ function checkDistanceToBorder(form, field) {
   const fieldName = field.Name[0];
   const distanceToLeftBorder = Number(field.LayoutLeft[0]);
   const layoutRight = distanceToLeftBorder + Number(field.Width[0]);
-  const distanceToRightBorder = Math.abs(
-    Number(form.FormWidth[0] - layoutRight),
-  );
+  const pageWidth = Number(form.FormPages[0].FormPage[0].Width);
+  const distanceToRightBorder = Math.abs(Number(pageWidth - layoutRight));
 
   if (distanceToRightBorder < 30) {
     addToReport(

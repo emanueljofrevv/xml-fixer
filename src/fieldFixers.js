@@ -246,7 +246,10 @@ function isTitleCase(fieldName) {
         word[0] !== word[0].toUpperCase() ||
         word.slice(1) !== word.slice(1).toLowerCase()
       ) {
-        addToReport(fieldName, `Field [${fieldName}] is not in Title Case`);
+        addToReport(
+          `#### ${fieldName}`,
+          `Field [${fieldName}] is not in Title Case`,
+        );
         return false;
       }
     }

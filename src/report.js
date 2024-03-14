@@ -31,6 +31,8 @@ function generateReport(data) {
       if (msg) {
         // Add the message
         markdown += `${i + 1}. ${msg}\n`;
+      } else {
+        console.log();
       }
     });
   });

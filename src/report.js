@@ -9,7 +9,12 @@ function addToReport(key, value) {
   }
 }
 
+function clearReport() {
+  report.clear();
+}
+
 module.exports = {
   addToReport,
   report,
+  clearReport,
 };

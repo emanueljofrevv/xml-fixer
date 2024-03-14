@@ -80,7 +80,7 @@ function convertJsonToXml(json) {
   return xml;
 }
 
-function printReport(path, data) {
+function generateReport(path, data) {
   let markdown = ``;
 
   data.forEach((value, key) => {
@@ -116,7 +116,7 @@ async function processXmlFile(path) {
   // Create files
   const xmlPath = `${outputXmlPath + fileName}.xml`;
   const reportPath = `${outputReportPath + fileName}.md`;
-  await printReport(reportPath, report);
+  await generateReport(reportPath, report);
   await writeFile(xmlPath, xml);
   clearReport();
 }

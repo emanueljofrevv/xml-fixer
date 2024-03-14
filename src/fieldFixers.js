@@ -452,19 +452,23 @@ function fixTextbox(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
+    if (isTitleCase(fieldName)) {
       if (!hasSpellingError(fieldName)) {
-        form = fieldNameCaseFixer(form, pIndex, fieldIndex, fixCase);
+        form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
       }
-
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    } else {
+      form = fieldNameCaseFixer(form, pIndex, fieldIndex, fixCase);
     }
   }
 
   return form;
 }
 
-function fixUploadButton(form, pIndex, fieldIndex) {}
+function fixUploadButton(form, pIndex, fieldIndex) {
+  const field = getFields(form, pIndex)[fieldIndex];
+  const fieldName = getFieldName(form, pIndex, fieldIndex);
+  console.log("fixUploadButton");
+}
 
 /* -------------------------------------------------------------------------- */
 /*                                MAIN FUNCTION                               */
@@ -504,12 +508,6 @@ function fixFields(form) {
         };
 
         const action = fieldActions[fieldType];
-
-        // if (fieldType === "FieldTextbox3") {
-        //   if (action) {
-        //     form = action(form, pageIndex, fieldIndex) || form;
-        //   }
-        // }
 
         if (action) {
           form = action(form, pageIndex, fieldIndex) || form;

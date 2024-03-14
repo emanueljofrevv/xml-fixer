@@ -12,7 +12,7 @@ const { addToReport, report, clearReport } = require("./report");
 // XML file paths
 const inputXmlFolderPath = "./src/xml/input/";
 const outputXmlPath = "./src/xml/output/";
-const reportPath = "./src/xml/output/";
+const outputReportPath = "./src/xml/output/";
 
 /* -------------------------------------------------------------------------- */
 /*                                FILE HANDLING                               */
@@ -80,10 +80,10 @@ function convertJsonToXml(json) {
   return xml;
 }
 
-function printReport(log) {
+function printReport(path, data) {
   let markdown = ``;
 
-  log.forEach((value, key) => {
+  data.forEach((value, key) => {
     // Add the subheader
     markdown += `${key}\n`;
     value.forEach((msg, i) => {
@@ -94,18 +94,17 @@ function printReport(log) {
     });
   });
 
-  const mdPath = `${reportPath}report_${new Date().getTime()}.md`;
-
-  return writeFile(mdPath, markdown);
+  return writeFile(path, markdown);
 }
 
 async function processXmlFile(path) {
-  const xmlData = await readXmlFile(inputXmlFolderPath + path);
-  const jsonData = await convertXmlToJson(xmlData);
+  const data = await readXmlFile(inputXmlFolderPath + path);
+  const fileName = path.split(".")[0];
+  const jsonData = await convertXmlToJson(data);
   const formEntity = jsonData.FormEntity;
 
   // Add the report header
-  addToReport("# Report", "");
+  addToReport(`# ${fileName} Report`, "");
 
   // Analyze the XML and fix the fields
   jsonData.FormEntity = fixFields(formEntity);
@@ -115,10 +114,11 @@ async function processXmlFile(path) {
   const xml = convertJsonToXml(jsonData);
 
   // Create files
-  const xmlPath = `${outputXmlPath}form_${new Date().getTime()}.xml`;
-  await printReport(report);
-  clearReport();
+  const xmlPath = `${outputXmlPath + fileName}.xml`;
+  const reportPath = `${outputReportPath + fileName}.md`;
+  await printReport(reportPath, report);
   await writeFile(xmlPath, xml);
+  clearReport();
 }
 
 /* -------------------------------------------------------------------------- */

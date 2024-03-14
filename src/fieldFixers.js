@@ -218,13 +218,16 @@ function isLabelOverlaping(field, fields) {
   const lblTop = Number(field.LayoutTop[0]);
   const lblWidth = Number(field.Width[0]);
   const lblRight = lblLeft + lblWidth;
+  const labelName = field.Name[0];
 
   fields.forEach((f) => {
     const fieldLeft = Number(f.LayoutLeft[0]);
     const fieldTop = Number(f.LayoutTop[0]);
     const fieldName = f.Name[0];
+    const topAproxEqual = Math.abs(fieldTop - lblTop) <= 15;
+    const borderAproxOverlap = lblRight - fieldLeft >= 5;
 
-    if (fieldTop === lblTop && fieldLeft < lblRight && fieldLeft > lblLeft) {
+    if (topAproxEqual && borderAproxOverlap && fieldLeft > lblLeft) {
       addToReport(
         `#### ${fieldName}`,
         `Field [${fieldName}] is overlapping with a label`,

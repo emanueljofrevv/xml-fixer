@@ -21,8 +21,26 @@ function clearReport() {
   report.clear();
 }
 
+function generateReport(data) {
+  let markdown = ``;
+
+  data.forEach((value, key) => {
+    // Add the subheader
+    markdown += `${key}\n`;
+    value.forEach((msg, i) => {
+      if (msg) {
+        // Add the message
+        markdown += `${i + 1}. ${msg}\n`;
+      }
+    });
+  });
+
+  return markdown;
+}
+
 module.exports = {
   addToReport,
   report,
   clearReport,
+  generateReport,
 };

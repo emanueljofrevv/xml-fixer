@@ -3,7 +3,12 @@ const fs = require("fs");
 const xml2js = require("xml2js");
 const fixFields = require("./fieldFixers");
 const fixGroupsAndConditions = require("./groupFixers");
-const { addToReport, report, clearReport } = require("./report");
+const {
+  addToReport,
+  report,
+  clearReport,
+  generateReport,
+} = require("./report");
 
 /* -------------------------------------------------------------------------- */
 /*                              CONFIG VARIABLES                              */
@@ -80,23 +85,6 @@ function convertJsonToXml(json) {
   return xml;
 }
 
-function generateReport(path, data) {
-  let markdown = ``;
-
-  data.forEach((value, key) => {
-    // Add the subheader
-    markdown += `${key}\n`;
-    value.forEach((msg, i) => {
-      if (msg) {
-        // Add the message
-        markdown += `${i + 1}. ${msg}\n`;
-      }
-    });
-  });
-
-  return writeFile(path, markdown);
-}
-
 async function processXmlFile(path) {
   const data = await readXmlFile(inputXmlFolderPath + path);
   const fileName = path.split(".")[0];
@@ -116,7 +104,8 @@ async function processXmlFile(path) {
   // Create files
   const xmlPath = `${outputXmlPath + fileName}.xml`;
   const reportPath = `${outputReportPath + fileName}.md`;
-  await generateReport(reportPath, report);
+  const reportData = await generateReport(report);
+  await writeFile(reportPath, reportData);
   await writeFile(xmlPath, xml);
   clearReport();
 }

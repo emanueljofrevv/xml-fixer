@@ -13,6 +13,16 @@ const fixAccessibility = false;
 const fixCase = false;
 const fixTabOrder = false;
 const fixContainerResponsiveFlow = false;
+const titleCaseExceptions = [
+  "ID",
+  "SSN",
+  "EIN",
+  "DOB",
+  "POA",
+  "POC",
+  "POI",
+  "POE",
+];
 
 /* -------------------------------------------------------------------------- */
 /*                              HELPER FUNCTIONS                              */
@@ -50,9 +60,13 @@ function checkAccessibility(form, pIndex, fieldIndex, fix = false) {
 
 function fixTitleCase(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
-  const titleCaseFieldName = strToTitleCase(fieldName);
+  const includesException = titleCaseExceptions.some((exc) =>
+    fieldName.includes(exc),
+  );
 
-  if (fixCase) {
+  if (fixCase && !includesException) {
+    const titleCaseFieldName = strToTitleCase(fieldName);
+
     form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
       fieldIndex
     ].Name[0] = titleCaseFieldName;
@@ -325,12 +339,10 @@ function fixCell(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
-    form = fixTitleCase(form, pIndex, fieldIndex);
-
-    if (isTitleCase(fieldName)) {
-      if (!hasSpellingError(fieldName)) {
-        form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
-      }
+    if (!isTitleCase(fieldName)) {
+      form = fixTitleCase(form, pIndex, fieldIndex);
+    } else if (!hasSpellingError(fieldName)) {
+      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
     }
   }
 
@@ -345,12 +357,10 @@ function fixCheckbox(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
-    form = fixTitleCase(form, pIndex, fieldIndex);
-
-    if (isTitleCase(fieldName)) {
-      if (!hasSpellingError(fieldName)) {
-        form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
-      }
+    if (!isTitleCase(fieldName)) {
+      form = fixTitleCase(form, pIndex, fieldIndex);
+    } else if (!hasSpellingError(fieldName)) {
+      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
     }
   }
 
@@ -397,12 +407,10 @@ function fixDropdown(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
-    form = fixTitleCase(form, pIndex, fieldIndex);
-
-    if (isTitleCase(fieldName)) {
-      if (!hasSpellingError(fieldName)) {
-        form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
-      }
+    if (!isTitleCase(fieldName)) {
+      form = fixTitleCase(form, pIndex, fieldIndex);
+    } else if (!hasSpellingError(fieldName)) {
+      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
     }
   }
 
@@ -434,12 +442,10 @@ function fixTextArea(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
-    form = fixTitleCase(form, pIndex, fieldIndex);
-
-    if (isTitleCase(fieldName)) {
-      if (!hasSpellingError(fieldName)) {
-        form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
-      }
+    if (!isTitleCase(fieldName)) {
+      form = fixTitleCase(form, pIndex, fieldIndex);
+    } else if (!hasSpellingError(fieldName)) {
+      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
     }
   }
 
@@ -453,12 +459,10 @@ function fixTextbox(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
-    form = fixTitleCase(form, pIndex, fieldIndex);
-
-    if (isTitleCase(fieldName)) {
-      if (!hasSpellingError(fieldName)) {
-        form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
-      }
+    if (!isTitleCase(fieldName)) {
+      form = fixTitleCase(form, pIndex, fieldIndex);
+    } else if (!hasSpellingError(fieldName)) {
+      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
     }
   }
 

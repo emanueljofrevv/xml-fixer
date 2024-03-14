@@ -13,6 +13,7 @@ const fixAccessibility = false;
 const fixCase = false;
 const fixTabOrder = false;
 const fixContainerResponsiveFlow = false;
+const PA_EXCEPTIONS = ["MPI", "ACT13", "PB22"];
 const titleCaseExceptions = [
   "ID",
   "SSN",
@@ -22,7 +23,8 @@ const titleCaseExceptions = [
   "POC",
   "POI",
   "POE",
-  "MPI",
+  "CSV",
+  ...PA_EXCEPTIONS,
 ];
 
 /* -------------------------------------------------------------------------- */

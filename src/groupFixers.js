@@ -118,7 +118,7 @@ function isFieldInMoreThanOneGroup(fields, form) {
 
 function fixGroupsAndConditions(form) {
   const groups = getGroups(form);
-  const allGroupsFields = getAllGroupsFields(groups);
+  const allGroupsFields = getAllGroupsFields(groups) || [];
   addToReport("## Groups and Conditions", "");
 
   isFieldInMoreThanOneGroup(allGroupsFields, form);

@@ -60,11 +60,8 @@ function checkAccessibility(form, pIndex, fieldIndex, fix = false) {
 
 function fixTitleCase(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
-  const includesException = titleCaseExceptions.some((exc) =>
-    fieldName.includes(exc),
-  );
 
-  if (fixCase && !includesException) {
+  if (fixCase) {
     const titleCaseFieldName = strToTitleCase(fieldName);
 
     form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
@@ -245,15 +242,22 @@ function isTitleCase(fieldName) {
     // Check if the word is not empty (to handle multiple spaces)
     if (word) {
       // If the first letter is not uppercase or the rest of the word has any uppercase letter, return false
-      if (
-        word[0] !== word[0].toUpperCase() ||
-        word.slice(1) !== word.slice(1).toLowerCase()
-      ) {
-        addToReport(
-          `#### ${fieldName}`,
-          `Field [${fieldName}] is not in Title Case`,
+      const isFirstLetterUppercase = word[0] === word[0].toUpperCase();
+      const isRestOfWordLowercase =
+        word.slice(1) === word.slice(1).toLowerCase();
+
+      if (!isFirstLetterUppercase || !isRestOfWordLowercase) {
+        const includesException = titleCaseExceptions.some((exc) =>
+          word.includes(exc),
         );
-        return false;
+
+        if (!includesException) {
+          addToReport(
+            `#### ${fieldName}`,
+            `Field [${fieldName}] is not in Title Case`,
+          );
+          return false;
+        }
       }
     }
     return true;

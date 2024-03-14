@@ -48,10 +48,11 @@ function checkAccessibility(form, pIndex, fieldIndex, fix = false) {
   return form;
 }
 
-function fieldNameCaseFixer(form, pIndex, fieldIndex, fix) {
+function fixTitleCase(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
   const titleCaseFieldName = strToTitleCase(fieldName);
-  if (fix) {
+
+  if (fixCase) {
     form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
       fieldIndex
     ].Name[0] = titleCaseFieldName;
@@ -218,9 +219,9 @@ function isLabelOverlaping(field, fields) {
   });
 }
 
-function isTitleCase(str) {
+function isTitleCase(fieldName) {
   // Split the string into an array of words
-  const words = str.split(" ");
+  const words = fieldName.split(" ");
 
   // Check each word to see if it follows the Title Case pattern
   words.forEach((word) => {
@@ -231,7 +232,7 @@ function isTitleCase(str) {
         word[0] !== word[0].toUpperCase() ||
         word.slice(1) !== word.slice(1).toLowerCase()
       ) {
-        addToReport(str, `Field [${str}] is not in Title Case`);
+        addToReport(fieldName, `Field [${fieldName}] is not in Title Case`);
         return false;
       }
     }
@@ -305,12 +306,12 @@ function fixCalendar(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
-      if (!hasSpellingError(fieldName)) {
-        form = fieldNameCaseFixer(form, pIndex, fieldIndex, fixCase);
-      }
+    form = fixTitleCase(form, pIndex, fieldIndex);
 
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    if (isTitleCase(fieldName)) {
+      if (!hasSpellingError(fieldName)) {
+        form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+      }
     }
   }
 
@@ -324,12 +325,12 @@ function fixCell(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
-      if (!hasSpellingError(fieldName)) {
-        form = fieldNameCaseFixer(form, pIndex, fieldIndex, fixCase);
-      }
+    form = fixTitleCase(form, pIndex, fieldIndex);
 
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    if (isTitleCase(fieldName)) {
+      if (!hasSpellingError(fieldName)) {
+        form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+      }
     }
   }
 
@@ -344,12 +345,12 @@ function fixCheckbox(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
-      if (!hasSpellingError(fieldName)) {
-        form = fieldNameCaseFixer(form, pIndex, fieldIndex, fixCase);
-      }
+    form = fixTitleCase(form, pIndex, fieldIndex);
 
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    if (isTitleCase(fieldName)) {
+      if (!hasSpellingError(fieldName)) {
+        form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+      }
     }
   }
 
@@ -396,12 +397,12 @@ function fixDropdown(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
-      if (!hasSpellingError(fieldName)) {
-        form = fieldNameCaseFixer(form, pIndex, fieldIndex, fixCase);
-      }
+    form = fixTitleCase(form, pIndex, fieldIndex);
 
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    if (isTitleCase(fieldName)) {
+      if (!hasSpellingError(fieldName)) {
+        form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+      }
     }
   }
 
@@ -433,12 +434,12 @@ function fixTextArea(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
-      if (!hasSpellingError(fieldName)) {
-        form = fieldNameCaseFixer(form, pIndex, fieldIndex, fixCase);
-      }
+    form = fixTitleCase(form, pIndex, fieldIndex);
 
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    if (isTitleCase(fieldName)) {
+      if (!hasSpellingError(fieldName)) {
+        form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+      }
     }
   }
 
@@ -452,12 +453,12 @@ function fixTextbox(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
+    form = fixTitleCase(form, pIndex, fieldIndex);
+
     if (isTitleCase(fieldName)) {
       if (!hasSpellingError(fieldName)) {
         form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
       }
-    } else {
-      form = fieldNameCaseFixer(form, pIndex, fieldIndex, fixCase);
     }
   }
 

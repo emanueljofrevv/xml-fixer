@@ -1,117 +1,39 @@
-# xml-fixer
+# VisualVault XML Fixer
 
-## Field Notification and Fixings
+This project is a utility tool designed to automate the process of fixing common issues in Form Templates XML files. It provides a set of features to alert users about potential problems and automatically correct them where possible.
+
+## 🌟 Features
 
 ### General
 
-1. **Right Border Proximity Alert**: Alerts when a field is positioned within 30px of the right border.
+- **Reporting Mode**: Disables automatic fixing.
+- **Batch Processing**: Processes all the XML files in the input folder creating outputs specific to each form template.
 
-2. **Tab Order Assignment**: Assigns a tab order value of 0.
+### Form components and fields
 
-### Buttons
+| Configuration/Standard | Action     | Buttons | Calendar | Cell | Checkbox | Container | Data Grid | Drop-down | Form ID Stamp | Image | Labels | RRC | Signature Stamp | Textbox | Text Area | Upload Buttons |
+| ---------------------- | ---------- | :-----: | :------: | :--: | :------: | :-------: | :-------: | :-------: | :-----------: | :---: | :----: | :-: | :-------------: | :-----: | :-------: | :------------: |
+| Accessibility Label    | Report/Fix |   ✅    |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |               |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |       ✅       |
+| Default Name           | Report     |   ✅    |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |      ✅       |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |       ✅       |
+| Default Text           | Report     |   ✅    |          |      |    ✅    |           |           |           |               |       |        |     |       ✅        |         |           |                |
+| Field Overlapping      | Report     |         |          |      |          |           |           |           |               |       |   ✅   |     |                 |         |           |                |
+| Responsive Flow        | Report/Fix |         |          |      |          |    ✅     |           |           |               |       |        |     |                 |         |           |                |
+| Right Border Proximity | Report     |   ✅    |    ✅    |  ✅  |    ✅    |           |           |    ✅     |      ✅       |  ✅   |        |     |       ✅        |   ✅    |    ✅     |       ✅       |
+| Simple Upload          | Report/Fix |         |          |      |          |           |           |           |               |       |        |     |                 |         |           |       ✅       |
+| Spelling               | Report     |         |    ✅    |  ✅  |    ✅    |           |           |    ✅     |      ✅       |       |        |     |                 |   ✅    |    ✅     |                |
+| Tab Order              | Report/Fix |   ✅    |    ✅    |  ✅  |    ✅    |           |           |    ✅     |               |       |        |     |       ✅        |   ✅    |    ✅     |       ✅       |
+| Title Case Name        | Report/Fix |         |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |      ✅       |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |                |
 
-1. **Default Name Alert**: Alerts users when 'DataField' has not been renamed.
-
-2. **Accessibility Label Automation**: For non-defaul field names without an 'Accessibility Label':
-
-   - **Missing Accessibility Label Alert**: Alerts users when the label is missing.
-
-3. **Default Text Alert**: Alerts users when the field default display text has not been changed.
-
-### Calendar
-
-1. **Default Name Alert**: Alerts users when 'DataField' has not been renamed.
-
-2. **Name Validation**: For non-default names:
-
-   - **Spelling Check**: Alerts users of possible misspellings for correction.
-   - **Title Case Correction**: For correctly spelled names: Set the field name to title case.
-
-3. **Accessibility Label Automation**: For non-defaul and correctly spelled field names without an 'Accessibility Label':
-
-   - **Accessibility Label Set**: Matches the label to the field name to ensure accessibility standards are met.
-
-### Cell
-
-1. **Default Name Alert**: Alerts users when 'DataField' has not been renamed.
-
-2. **Name Validation**: For non-default names:
-
-   - **Spelling Check**: Alerts users of possible misspellings for correction.
-   - **Title Case Correction**: For correctly spelled names: Set the field name to title case.
-
-3. **Accessibility Label Automation**: For non-defaul and correctly spelled field names without an 'Accessibility Label':
-
-   - **Accessibility Label Set**: Matches the label to the field name to ensure accessibility standards are met.
-
-### Checkbox
-
-1. **Default Name Alert**: Alerts users when 'DataField' has not been renamed.
-
-2. **Name Validation**: For non-default names:
-
-   - **Spelling Check**: Alerts users of possible misspellings for correction.
-   - **Title Case Correction**: For correctly spelled names: Set the field name to title case.
-
-3. **Accessibility Label Automation**: For non-defaul and correctly spelled field names without an 'Accessibility Label':
-
-   - **Accessibility Label Set**: Matches the label to the field name to ensure accessibility standards are met.
-
-4. **Default Text Alert**: Alerts users when the field default display text has not been changed.
-
-### Container
-
-1. **Responsive Flow Automation**: For containers with more than 1 field: Sets the responsive flow setting to "1 column".
-
-### Drop-down
-
-1. **Default Name Alert**: Alerts users when 'DataField' has not been renamed.
-
-2. **Name Validation**: For non-default names:
-
-   - **Spelling Check**: Alerts users of possible misspellings for correction.
-   - **Title Case Correction**: For correctly spelled names: Set the field name to title case.
-
-3. **Accessibility Label Automation**: For non-defaul and correctly spelled field names without an 'Accessibility Label':
-
-   - **Accessibility Label Set**: Matches the label to the field name to ensure accessibility standards are met.
-
-### Labels
-
-1. **Field Overlapping Alert**: Alerts if the label is overlapping a input field.
-
-### Signature Stamp
-
-1. **Default Text Alert**: Alerts users when the field default display text has not been changed.
-
-### Textbox
-
-1. **Default Name Alert**: Alerts users when 'DataField' has not been renamed.
-
-2. **Name Validation**: For non-default names:
-
-   - **Spelling Check**: Alerts users of possible misspellings for correction.
-   - **Title Case Correction**: For correctly spelled names: Set the field name to title case.
-
-3. **Accessibility Label Automation**: For non-defaul and correctly spelled field names without an 'Accessibility Label':
-
-   - **Accessibility Label Set**: Matches the label to the field name to ensure accessibility standards are met.
-
-### Text Area
-
-1. **Default Name Alert**: Alerts users when 'DataField' has not been renamed.
-
-2. **Name Validation**: For non-default names:
-
-   - **Spelling Check**: Alerts users of possible misspellings for correction.
-   - **Title Case Correction**: For correctly spelled names: Set the field name to title case.
-
-3. **Accessibility Label Automation**: For non-defaul and correctly spelled field names without an 'Accessibility Label':
-
-   - **Accessibility Label Set**: Matches the label to the field name to ensure accessibility standards are met.
-
-### Upload Buttons
-
-## Groups and Conditions
+### Groups and Conditions
 
 - Notifies if a field is in more than 1 group.
+
+## 🚀 Getting Started
+
+Include instructions on how to set up, install, and run the project. This section should guide the user through getting a copy of the project up and running on their local machine for development and testing purposes.
+
+```bash
+git clone https://github.com/yourrepository/VisualVault-XML-Fixer.git
+cd VisualVault-XML-Fixer
+# Include other necessary commands
+```

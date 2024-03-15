@@ -179,9 +179,9 @@ function hasDefaultName(fieldName, fieldType = "Default") {
   // object mapping pattern of defaults names according to field type
   const defaultNames = {
     Default: "DataField[0-9]+",
-    UploadButton: "UploadButton",
+    UploadButton: "UploadButton[0-9]+",
     ImageFormControl: "Image[0-9]+",
-    RepeatingRowControl: "RepeatingRowControl",
+    RepeatingRowControl: "RepeatingRowControl[0-9]+",
     FieldDataGrid: "DataGrid[0-9]+",
   };
 
@@ -471,7 +471,7 @@ function fixContainer(form, pIndex, fieldIndex) {
 function fixDataGrid(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
-  if (!hasDefaultName(fieldName)) {
+  if (!hasDefaultName(fieldName, "FieldDataGrid")) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
@@ -544,7 +544,7 @@ function fixRRC(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
-  if (!hasDefaultName(fieldName)) {
+  if (!hasDefaultName(fieldName, "RepeatingRowControl")) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
@@ -620,7 +620,7 @@ function fixUploadButton(form, pIndex, fieldIndex) {
   form = checkTabOrder(form, field, pIndex, fieldIndex);
   checkDistanceToBorder(form, field);
 
-  if (!hasDefaultName(fieldName)) {
+  if (!hasDefaultName(fieldName, "UploadButton")) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }

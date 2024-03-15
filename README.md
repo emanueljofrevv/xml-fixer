@@ -51,13 +51,3 @@ Description of configurations/standards. The table above has priority over the p
 
 - Reports if a field is in more than 1 group.
 - Reports if a group does not include an admin override condition.
-
-## 🚀 Getting Started
-
-Include instructions on how to set up, install, and run the project. This section should guide the user through getting a copy of the project up and running on their local machine for development and testing purposes.
-
-```bash
-git clone https://github.com/yourrepository/VisualVault-XML-Fixer.git
-cd VisualVault-XML-Fixer
-# Include other necessary commands
-```

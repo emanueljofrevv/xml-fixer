@@ -477,7 +477,12 @@ function fixFormIDStamp(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 }
 
-function fixImage(form, pIndex, fieldIndex) {}
+function fixImage(form, pIndex, fieldIndex) {
+  const field = getPageFields(form, pIndex)[fieldIndex];
+  const fieldName = getFieldName(form, pIndex, fieldIndex);
+
+  checkDistanceToBorder(form, field);
+}
 
 function fixLabel(form, pIndex, fieldIndex) {
   const fields = getPageFields(form, pIndex);
@@ -491,6 +496,7 @@ function fixRRC(form, pIndex, fieldIndex) {}
 function fixSignatureStamp(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
   hasDefaultText(field);
+  checkDistanceToBorder(form, field);
 }
 
 function fixTextArea(form, pIndex, fieldIndex) {
@@ -538,6 +544,7 @@ function fixUploadButton(form, pIndex, fieldIndex) {
     getPropertyValueByPropetyName(field, "DisplayUploadedFiles") === "false";
 
   form = checkTabOrder(form, field, pIndex, fieldIndex);
+  checkDistanceToBorder(form, field);
 
   if (!isSimpleUpload) {
     if (fixSimpleUploadButton) {

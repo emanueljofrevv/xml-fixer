@@ -24,6 +24,29 @@ This project is a utility tool designed to automate the process of fixing common
 | Tab Order               | Report/Fix |   ✅    |    ✅    |  ✅  |    ✅    |           |           |    ✅     |               |       |        |     |       ✅        |   ✅    |    ✅     |       ✅       |
 | Title Case Name         | Report/Fix |         |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |      ✅       |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |                |
 
+#### Notes:
+
+Description of configurations/standards. The table above has priority over the preconditions listed here.
+
+- **Accessibility Label**: Fields that should have a `Accessibility Label Text` value in the `Accessibility` configurations.
+  - Preconditions:
+    - `Name` must have a non-default value.
+    - `Name` must be on title case.
+    - `Name` must have no spelling errors.
+- **Default Name**: Fields that should not have the default `Name` value in the `Control Properties` configurations.
+- **Default Text**: Fields that should not have the default `Text` value in the `Appearance` configurations.
+- **Label Overlapping Field**: Alerts if a label is overlapping a field by more than 5px.
+- **Responsive Flow**: Containers with more than 1 field in them should have the `Responsive Flow` value in the `Appearance` configurations set to `1 Column` or `2 Columns`.
+- **Right Border Proximity**: Fields that should not be closer than 30px from the form right margin.
+- **Simple Upload**: Upload buttons that should have the `Display Uploaded Files` checkbox in the `Miscellaneous` configurations unchecked.
+- **Spelling**: Fields that should have the `Name` value in the `Control Properties` configurations checked for spelling errors.
+  - Preconditions:
+    - `Name` must have a non-default value.
+- **Tab Order**: Fields that should have the `Tab Order` value in the `Appearance` configurations set to `0`.
+- **Title Case**: Fields that should have the `Name` value in the `Appearance` on title case.
+  - Preconditions:
+    - `Name` must have a non-default value.
+
 ### Groups and Conditions
 
 - Reports if a field is in more than 1 group.

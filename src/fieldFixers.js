@@ -14,6 +14,8 @@ const fixAccessibility = false;
 const fixCase = false;
 const fixTabOrder = false;
 const fixContainerResponsiveFlow = false;
+
+// Exceptions to the Title Case rule
 const uppercaseExceptionWords = ["of", "to", "a", "and", "the", "in", "on"];
 const PA_EXCEPTIONS = ["MPI", "ACT13", "PB22", "DBA"];
 const WA_EXCEPTIONS = ["DP"];
@@ -66,129 +68,6 @@ function checkAccessibility(form, pIndex, fieldIndex, fix = false) {
   return form;
 }
 
-function fixTitleCase(form, pIndex, fieldIndex) {
-  const fieldName = getFieldName(form, pIndex, fieldIndex);
-
-  if (fixCase) {
-    const titleCaseFieldName = strToTitleCase(fieldName);
-
-    form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
-      fieldIndex
-    ].Name[0] = titleCaseFieldName;
-
-    addToReport(
-      `#### ${fieldName}`,
-      `The field name \`${fieldName}\` was changed to \`${titleCaseFieldName}\`.`,
-    );
-  }
-
-  return form;
-}
-
-function wordToUppercase(word) {
-  return word.charAt(0).toUpperCase() + word.slice(1);
-}
-
-function strToTitleCase(str) {
-  // Split the string into an array of words
-  const words = str.split(" ");
-
-  // Capitalize the first letter of each word
-  const titleCaseWords = words.map((word) => wordToUppercase(word));
-
-  // Join the words back into a single string
-  return titleCaseWords.join(" ");
-}
-
-function getAccesibilityLabel(form, pIndex, fieldIndex) {
-  const fields = getFields(form, pIndex);
-  const field = fields[fieldIndex];
-  const accessibilityLabel = field.AccessibilityLabel[0];
-  return accessibilityLabel;
-}
-
-function getLabelByFieldByName(form, fieldName) {
-  const fields = form.FormPages[0].FormPage[0].FieldList[0].BaseField;
-  let label;
-
-  fields.forEach((field) => {
-    const fieldType = field.$["xsi:type"];
-    const isLabel = fieldType === "FieldLabel";
-
-    if (isLabel) {
-      const labelLayoutTop = field.LayoutTop[0];
-      const labelText = field.Text[0];
-      const namePartialMatch = labelText.includes(fieldName.trim());
-      const similarTopDistance =
-        Math.abs(field.LayoutTop[0] - labelLayoutTop) <= 15;
-
-      if (namePartialMatch && similarTopDistance) {
-        label = labelText;
-      }
-    }
-  });
-
-  return label;
-}
-
-function getFieldName(form, pIndex, fieldIndex) {
-  const fields = getFields(form, pIndex);
-  const field = fields[fieldIndex];
-  const fieldName = field.Name[0];
-  return fieldName;
-}
-
-function getPropertyValueByPropetyName(field, propertyName) {
-  const hasPorperty = propertyName in field;
-  if (hasPorperty) {
-    return field[propertyName][0];
-  }
-
-  throw new Error("propertyName not exist");
-}
-
-function getFields(form, pIndex) {
-  return form.FormPages[pIndex].FormPage[0].FieldList[0].BaseField;
-}
-
-function hasDefaultText(field) {
-  const fieldName = field.Name[0];
-  const fieldType = field.$["xsi:type"];
-  const defaultText = field.Text[0];
-  let isDefaultText = false;
-
-  if (fieldType === "FieldCheckbox") {
-    isDefaultText = defaultText.includes("Checkbox");
-  } else if (fieldType === "UserIDStamp") {
-    isDefaultText = defaultText.includes("Signature Stamp");
-  } else if (fieldType === "FormButton") {
-    isDefaultText =
-      defaultText.includes("Next") && !field.Name[0].includes("Next");
-  }
-
-  if (isDefaultText) {
-    addToReport(
-      `#### ${fieldName}`,
-      `The field text \`${defaultText}\` has a default value.`,
-    );
-  }
-
-  return isDefaultText;
-}
-
-function hasDefaultName(fieldName) {
-  const isDefaultName = fieldName.includes("DataField");
-
-  if (isDefaultName) {
-    addToReport(
-      `#### ${fieldName}`,
-      `The field name \`${fieldName}\` has a default value.`,
-    );
-  }
-
-  return isDefaultName;
-}
-
 function checkDistanceToBorder(form, field) {
   const fieldName = field.Name[0];
   const distanceToLeftBorder = Number(field.LayoutLeft[0]);
@@ -224,6 +103,114 @@ function checkTabOrder(form, field, pageIndex, fieldIndex) {
   }
 
   return form;
+}
+
+function fixTitleCase(form, pIndex, fieldIndex) {
+  const fieldName = getFieldName(form, pIndex, fieldIndex);
+
+  if (fixCase) {
+    const titleCaseFieldName = strToTitleCase(fieldName);
+
+    form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
+      fieldIndex
+    ].Name[0] = titleCaseFieldName;
+
+    addToReport(
+      `#### ${fieldName}`,
+      `The field name \`${fieldName}\` was changed to \`${titleCaseFieldName}\`.`,
+    );
+  }
+
+  return form;
+}
+
+function getAccesibilityLabel(form, pIndex, fieldIndex) {
+  const fields = getPageFields(form, pIndex);
+  const field = fields[fieldIndex];
+  const accessibilityLabel = field.AccessibilityLabel[0];
+  return accessibilityLabel;
+}
+
+function getFieldName(form, pIndex, fieldIndex) {
+  const fields = getPageFields(form, pIndex);
+  const field = fields[fieldIndex];
+  const fieldName = field.Name[0];
+  return fieldName;
+}
+
+function getPageFields(form, pIndex) {
+  return form.FormPages[pIndex].FormPage[0].FieldList[0].BaseField;
+}
+
+function getLabelByFieldByName(form, fieldName) {
+  const fields = form.FormPages[0].FormPage[0].FieldList[0].BaseField;
+  let label;
+
+  fields.forEach((field) => {
+    const fieldType = field.$["xsi:type"];
+    const isLabel = fieldType === "FieldLabel";
+
+    if (isLabel) {
+      const labelLayoutTop = field.LayoutTop[0];
+      const labelText = field.Text[0];
+      const namePartialMatch = labelText.includes(fieldName.trim());
+      const similarTopDistance =
+        Math.abs(field.LayoutTop[0] - labelLayoutTop) <= 15;
+
+      if (namePartialMatch && similarTopDistance) {
+        label = labelText;
+      }
+    }
+  });
+
+  return label;
+}
+
+function getPropertyValueByPropetyName(field, propertyName) {
+  const hasPorperty = propertyName in field;
+  if (hasPorperty) {
+    return field[propertyName][0];
+  }
+
+  throw new Error("propertyName not exist");
+}
+
+function hasDefaultName(fieldName) {
+  const isDefaultName = fieldName.includes("DataField");
+
+  if (isDefaultName) {
+    addToReport(
+      `#### ${fieldName}`,
+      `The field name \`${fieldName}\` has a default value.`,
+    );
+  }
+
+  return isDefaultName;
+}
+
+function hasDefaultText(field) {
+  const fieldName = field.Name[0];
+  const fieldType = field.$["xsi:type"];
+  const defaultText = field.Text[0];
+  let isDefaultText = false;
+
+  if (fieldType === "FieldCheckbox") {
+    isDefaultText = defaultText.includes("Checkbox");
+  } else if (fieldType === "UserIDStamp") {
+    isDefaultText = defaultText.includes("Signature Stamp");
+  } else if (fieldType === "FormButton") {
+    isDefaultText =
+      defaultText.includes("Next") && !field.Name[0].includes("Next");
+  }
+
+  if (isDefaultText) {
+    addToReport(
+      `#### ${fieldName}`,
+      `The field text \`${defaultText}\` has a default value.`,
+    );
+  }
+
+  return isDefaultText;
 }
 
 function isLabelOverlaping(field, fields) {
@@ -291,6 +278,21 @@ function isTitleCase(fieldName) {
   return true;
 }
 
+function strToTitleCase(str) {
+  // Split the string into an array of words
+  const words = str.split(" ");
+
+  // Capitalize the first letter of each word
+  const titleCaseWords = words.map((word) => wordToUppercase(word));
+
+  // Join the words back into a single string
+  return titleCaseWords.join(" ");
+}
+
+function wordToUppercase(word) {
+  return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
 /* -------------------------------------------------------------------------- */
 /*                                SPELL CHECKER                               */
 /* -------------------------------------------------------------------------- */
@@ -339,7 +341,7 @@ function hasSpellingError(fieldName) {
 
 function fixButton(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
-  const field = getFields(form, pIndex)[fieldIndex];
+  const field = getPageFields(form, pIndex)[fieldIndex];
 
   if (!hasDefaultName(fieldName)) {
     form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
@@ -352,7 +354,7 @@ function fixButton(form, pIndex, fieldIndex) {
 
 function fixCalendar(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
-  const field = getFields(form, pIndex)[fieldIndex];
+  const field = getPageFields(form, pIndex)[fieldIndex];
 
   checkDistanceToBorder(form, field);
 
@@ -369,7 +371,7 @@ function fixCalendar(form, pIndex, fieldIndex) {
 }
 
 function fixCell(form, pIndex, fieldIndex) {
-  const field = getFields(form, pIndex)[fieldIndex];
+  const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   checkDistanceToBorder(form, field);
@@ -388,7 +390,7 @@ function fixCell(form, pIndex, fieldIndex) {
 
 function fixCheckbox(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
-  const field = getFields(form, pIndex)[fieldIndex];
+  const field = getPageFields(form, pIndex)[fieldIndex];
 
   hasDefaultText(field);
   checkDistanceToBorder(form, field);
@@ -408,7 +410,7 @@ function fixCheckbox(form, pIndex, fieldIndex) {
 function fixContainer(form, pIndex, fieldIndex) {
   const oneColumnResponsiveFlow = "3";
   const twoColumnResponsiveFlow = "4";
-  const fields = getFields(form, pIndex);
+  const fields = getPageFields(form, pIndex);
   const field = fields[fieldIndex];
   const fieldID = field.ID[0];
   const fieldName = field.Name[0];
@@ -444,7 +446,7 @@ function fixContainer(form, pIndex, fieldIndex) {
 function fixDataGrid(form, pIndex, fieldIndex) {}
 
 function fixDropdown(form, pIndex, fieldIndex) {
-  const field = getFields(form, pIndex)[fieldIndex];
+  const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   checkDistanceToBorder(form, field);
@@ -466,7 +468,7 @@ function fixFormIDStamp(form, pIndex, fieldIndex) {}
 function fixImage(form, pIndex, fieldIndex) {}
 
 function fixLabel(form, pIndex, fieldIndex) {
-  const fields = getFields(form, pIndex);
+  const fields = getPageFields(form, pIndex);
   const field = fields[fieldIndex];
 
   isLabelOverlaping(field, fields);
@@ -475,12 +477,12 @@ function fixLabel(form, pIndex, fieldIndex) {
 function fixRRC(form, pIndex, fieldIndex) {}
 
 function fixSignatureStamp(form, pIndex, fieldIndex) {
-  const field = getFields(form, pIndex)[fieldIndex];
+  const field = getPageFields(form, pIndex)[fieldIndex];
   hasDefaultText(field);
 }
 
 function fixTextArea(form, pIndex, fieldIndex) {
-  const field = getFields(form, pIndex)[fieldIndex];
+  const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   checkDistanceToBorder(form, field);
@@ -498,7 +500,7 @@ function fixTextArea(form, pIndex, fieldIndex) {
 }
 
 function fixTextbox(form, pIndex, fieldIndex) {
-  const field = getFields(form, pIndex)[fieldIndex];
+  const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   checkDistanceToBorder(form, field);
@@ -516,7 +518,7 @@ function fixTextbox(form, pIndex, fieldIndex) {
 }
 
 function fixUploadButton(form, pIndex, fieldIndex) {
-  const field = getFields(form, pIndex)[fieldIndex];
+  const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
   const isSimpleUpload =
     getPropertyValueByPropetyName(field, "DisplayUploadedFiles") === "false";
@@ -551,7 +553,7 @@ function fixFields(form) {
     addToReport("## Fields", "");
     // Iterate over each form page
     form.FormPages.forEach((page, pageIndex) => {
-      const fields = getFields(form, pageIndex);
+      const fields = getPageFields(form, pageIndex);
 
       // Iterate over each field in the page
       fields.forEach((field, fieldIndex) => {

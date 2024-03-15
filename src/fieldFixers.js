@@ -569,9 +569,7 @@ function fixSignatureStamp(form, pIndex, fieldIndex) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
-    if (!hasSpellingError(fieldName)) {
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
-    }
+    form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
   }
 
   return form;
@@ -628,9 +626,7 @@ function fixUploadButton(form, pIndex, fieldIndex) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
-    if (!hasSpellingError(fieldName)) {
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
-    }
+    form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
   }
 
   if (!isSimpleUpload) {

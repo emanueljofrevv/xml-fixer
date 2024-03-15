@@ -202,22 +202,24 @@ function hasDefaultText(field) {
   const fieldType = field.$["xsi:type"];
   const defaultText = field.Text[0];
   let isDefaultText = false;
+  let regExp;
 
   switch (fieldType) {
     case "FieldCheckbox":
-      isDefaultText = defaultText.includes("Checkbox");
+      regExp = /Checkbox/;
       break;
     case "UserIDStamp":
-      isDefaultText = defaultText.includes("Signature Stamp");
+      regExp = /Signature Stamp/;
       break;
     case "FormButton":
-      isDefaultText =
-        defaultText.includes("Next") && !field.Name[0].includes("Next");
+      regExp = /Next/;
       break;
     default:
       // handle other field types here
       break;
   }
+
+  isDefaultText = regExp.test(fieldName);
 
   if (isDefaultText) {
     addToReport(
@@ -227,6 +229,11 @@ function hasDefaultText(field) {
   }
 
   return isDefaultText;
+}
+
+function isExceptionWord(word) {
+  const regex = new RegExp(`\\b${word}\\b`, "i");
+  return titleCaseExceptions.some((exc) => regex.test(exc));
 }
 
 function isLabelOverlaping(field, fields) {
@@ -274,9 +281,7 @@ function isTitleCase(fieldName) {
         word.slice(1) === word.slice(1).toLowerCase();
 
       if (!isFirstLetterUppercase || !isRestOfWordLowercase) {
-        const includesException = titleCaseExceptions.some((exc) =>
-          word.includes(exc),
-        );
+        const includesException = isExceptionWord(word);
 
         if (!includesException) {
           addToReport(
@@ -330,7 +335,7 @@ function hasSpellingError(fieldName) {
 
   words.forEach((word) => {
     const isValid = spellchecker.correct(word);
-    const isException = titleCaseExceptions.some((exc) => word.includes(exc));
+    const isException = isExceptionWord(word);
 
     if (!isValid && !isException) {
       const suggestedWords = spellchecker.suggest(word);

@@ -363,6 +363,9 @@ function fixButton(form, pIndex, fieldIndex) {
   form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
+    if (!isTitleCase(fieldName)) {
+      form = fixTitleCase(form, pIndex, fieldIndex);
+    }
     form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
   }
 
@@ -466,10 +469,14 @@ function fixContainer(form, pIndex, fieldIndex) {
 }
 
 function fixDataGrid(form, pIndex, fieldIndex) {
-  const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
-  hasDefaultName(fieldName, "FieldDataGrid");
-  form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+
+  if (!hasDefaultName(fieldName)) {
+    if (!isTitleCase(fieldName)) {
+      form = fixTitleCase(form, pIndex, fieldIndex);
+    }
+    form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+  }
 
   return form;
 }
@@ -498,8 +505,15 @@ function fixFormIDStamp(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   checkDistanceToBorder(form, field);
-  hasDefaultName(fieldName);
-  form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+
+  if (!hasDefaultName(fieldName)) {
+    if (!isTitleCase(fieldName)) {
+      form = fixTitleCase(form, pIndex, fieldIndex);
+    }
+    if (!hasSpellingError(fieldName)) {
+      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    }
+  }
 
   return form;
 }
@@ -509,9 +523,13 @@ function fixImage(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   checkDistanceToBorder(form, field);
-  hasDefaultName(fieldName, "ImageFormControl");
-  form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
 
+  if (!hasDefaultName(fieldName)) {
+    if (!isTitleCase(fieldName)) {
+      form = fixTitleCase(form, pIndex, fieldIndex);
+    }
+    form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+  }
   return form;
 }
 
@@ -528,8 +546,14 @@ function fixRRC(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
-  hasDefaultName(fieldName, "RepeatingRowControl");
-  form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+  if (!hasDefaultName(fieldName)) {
+    if (!isTitleCase(fieldName)) {
+      form = fixTitleCase(form, pIndex, fieldIndex);
+    }
+    if (!hasSpellingError(fieldName)) {
+      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    }
+  }
 
   return form;
 }
@@ -537,10 +561,18 @@ function fixRRC(form, pIndex, fieldIndex) {
 function fixSignatureStamp(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
+
   hasDefaultText(field);
   checkDistanceToBorder(form, field);
-  hasDefaultName(fieldName);
-  form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+
+  if (!hasDefaultName(fieldName)) {
+    if (!isTitleCase(fieldName)) {
+      form = fixTitleCase(form, pIndex, fieldIndex);
+    }
+    if (!hasSpellingError(fieldName)) {
+      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    }
+  }
 
   return form;
 }
@@ -591,8 +623,15 @@ function fixUploadButton(form, pIndex, fieldIndex) {
 
   form = checkTabOrder(form, field, pIndex, fieldIndex);
   checkDistanceToBorder(form, field);
-  hasDefaultName(fieldName, "UploadButton");
-  form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+
+  if (!hasDefaultName(fieldName)) {
+    if (!isTitleCase(fieldName)) {
+      form = fixTitleCase(form, pIndex, fieldIndex);
+    }
+    if (!hasSpellingError(fieldName)) {
+      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    }
+  }
 
   if (!isSimpleUpload) {
     if (fixSimpleUploadButton) {

@@ -343,6 +343,9 @@ function fixButton(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
   const field = getPageFields(form, pIndex)[fieldIndex];
 
+  checkDistanceToBorder(form, field);
+  form = checkTabOrder(form, field, pIndex, fieldIndex);
+
   if (!hasDefaultName(fieldName)) {
     form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
   }
@@ -357,6 +360,7 @@ function fixCalendar(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
 
   checkDistanceToBorder(form, field);
+  form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
     if (!isTitleCase(fieldName)) {
@@ -375,6 +379,7 @@ function fixCell(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   checkDistanceToBorder(form, field);
+  form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
     if (!isTitleCase(fieldName)) {
@@ -394,6 +399,7 @@ function fixCheckbox(form, pIndex, fieldIndex) {
 
   hasDefaultText(field);
   checkDistanceToBorder(form, field);
+  form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
     if (!isTitleCase(fieldName)) {
@@ -450,6 +456,7 @@ function fixDropdown(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   checkDistanceToBorder(form, field);
+  form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
     if (!isTitleCase(fieldName)) {
@@ -463,7 +470,12 @@ function fixDropdown(form, pIndex, fieldIndex) {
   return form;
 }
 
-function fixFormIDStamp(form, pIndex, fieldIndex) {}
+function fixFormIDStamp(form, pIndex, fieldIndex) {
+  const field = getPageFields(form, pIndex)[fieldIndex];
+  const fieldName = getFieldName(form, pIndex, fieldIndex);
+
+  checkDistanceToBorder(form, field);
+}
 
 function fixImage(form, pIndex, fieldIndex) {}
 
@@ -486,6 +498,7 @@ function fixTextArea(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   checkDistanceToBorder(form, field);
+  form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
     if (!isTitleCase(fieldName)) {
@@ -504,6 +517,7 @@ function fixTextbox(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   checkDistanceToBorder(form, field);
+  form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
     if (!isTitleCase(fieldName)) {
@@ -522,6 +536,8 @@ function fixUploadButton(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
   const isSimpleUpload =
     getPropertyValueByPropetyName(field, "DisplayUploadedFiles") === "false";
+
+  form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!isSimpleUpload) {
     if (fixSimpleUploadButton) {
@@ -558,10 +574,6 @@ function fixFields(form) {
       // Iterate over each field in the page
       fields.forEach((field, fieldIndex) => {
         const fieldType = field.$["xsi:type"];
-
-        if (fieldType !== "FieldContainer") {
-          form = checkTabOrder(form, field, pageIndex, fieldIndex);
-        }
 
         const fieldActions = {
           CellField: (f, i, j) => fixCell(f, i, j),

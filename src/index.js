@@ -126,5 +126,3 @@ async function main() {
 }
 
 main();
-
-//TODO: filtrar label overlapping otro label

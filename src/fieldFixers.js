@@ -550,8 +550,8 @@ function fixFields(form) {
   try {
     addToReport("## Fields", "");
     // Iterate over each form page
-    form.FormPages.forEach(({ FormPage }, pageIndex) => {
-      const fields = FormPage[pageIndex].FieldList[0].BaseField;
+    form.FormPages.forEach((page, pageIndex) => {
+      const fields = getFields(form, pageIndex);
 
       // Iterate over each field in the page
       fields.forEach((field, fieldIndex) => {

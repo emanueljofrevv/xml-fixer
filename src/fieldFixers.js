@@ -175,8 +175,17 @@ function getPropertyValueByPropetyName(field, propertyName) {
   throw new Error("propertyName not exist");
 }
 
-function hasDefaultName(fieldName) {
-  const isDefaultName = fieldName.includes("DataField");
+function hasDefaultName(fieldName, fieldType = "Default") {
+  // object mapping pattern of defaults names according to field type
+  const defaultNames = {
+    Default: "DataField[0-9]+",
+    UploadButton: "UploadButton",
+    ImageFormControl: "Image[0-9]+",
+    RepeatingRowControl: "RepeatingRowControl",
+    FieldDataGrid: "DataGrid[0-9]+",
+  };
+
+  const isDefaultName = new RegExp(defaultNames[fieldType]).test(fieldName);
 
   if (isDefaultName) {
     addToReport(
@@ -449,7 +458,11 @@ function fixContainer(form, pIndex, fieldIndex) {
   return form;
 }
 
-function fixDataGrid(form, pIndex, fieldIndex) {}
+function fixDataGrid(form, pIndex, fieldIndex) {
+  const field = getPageFields(form, pIndex)[fieldIndex];
+  const fieldName = getFieldName(form, pIndex, fieldIndex);
+  hasDefaultName(fieldName, "FieldDataGrid");
+}
 
 function fixDropdown(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
@@ -475,6 +488,7 @@ function fixFormIDStamp(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   checkDistanceToBorder(form, field);
+  hasDefaultName(fieldName);
 }
 
 function fixImage(form, pIndex, fieldIndex) {
@@ -482,6 +496,7 @@ function fixImage(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   checkDistanceToBorder(form, field);
+  hasDefaultName(fieldName, "ImageFormControl");
 }
 
 function fixLabel(form, pIndex, fieldIndex) {
@@ -491,12 +506,19 @@ function fixLabel(form, pIndex, fieldIndex) {
   isLabelOverlaping(field, fields);
 }
 
-function fixRRC(form, pIndex, fieldIndex) {}
+function fixRRC(form, pIndex, fieldIndex) {
+  const field = getPageFields(form, pIndex)[fieldIndex];
+  const fieldName = getFieldName(form, pIndex, fieldIndex);
+
+  hasDefaultName(fieldName, "RepeatingRowControl");
+}
 
 function fixSignatureStamp(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
+  const fieldName = getFieldName(form, pIndex, fieldIndex);
   hasDefaultText(field);
   checkDistanceToBorder(form, field);
+  hasDefaultName(fieldName);
 }
 
 function fixTextArea(form, pIndex, fieldIndex) {
@@ -545,6 +567,7 @@ function fixUploadButton(form, pIndex, fieldIndex) {
 
   form = checkTabOrder(form, field, pIndex, fieldIndex);
   checkDistanceToBorder(form, field);
+  hasDefaultName(fieldName, "UploadButton");
 
   if (!isSimpleUpload) {
     if (fixSimpleUploadButton) {

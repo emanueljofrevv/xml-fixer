@@ -510,10 +510,7 @@ function fixFormIDStamp(form, pIndex, fieldIndex) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
-    if (!hasSpellingError(fieldName)) {
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
-    }
-  }
+    hasSpellingError(fieldName)  
 
   return form;
 }

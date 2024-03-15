@@ -524,7 +524,7 @@ function fixImage(form, pIndex, fieldIndex) {
 
   checkDistanceToBorder(form, field);
 
-  if (!hasDefaultName(fieldName)) {
+  if (!hasDefaultName(fieldName, "ImageFormControl")) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }

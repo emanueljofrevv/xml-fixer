@@ -117,35 +117,38 @@ function isFieldInMoreThanOneGroup(fields, form) {
 /* -------------------------------------------------------------------------- */
 
 function fixGroupsAndConditions(form) {
-  let groups = getGroups(form);
+  try {
+    let groups = getGroups(form);
 
-  if (!groups) {
-    groups = [];
-  }
-
-  const allGroupsFields = getAllGroupsFields(groups) || [];
-  addToReport("## Groups and Conditions", "");
-
-  if (groups.length === 0) {
-    addToReport(
-      `#### The template hasn't groups`,
-      `The template hasn't groups`,
-    );
-  }
-
-  isFieldInMoreThanOneGroup(allGroupsFields, form);
-
-  groups.forEach((group) => {
-    const groupConditions = getConditionsSets(group);
-    const groupName = group.GroupName[0];
-    const isOverrideGroup = groupName.toLowerCase().includes("admin");
-
-    if (!isOverrideGroup) {
-      hasAdminOverride(groupName, groupConditions, form);
+    if (!groups) {
+      groups = [];
     }
-  });
 
-  console.log();
+    const allGroupsFields = getAllGroupsFields(groups) || [];
+    addToReport("## Groups and Conditions", "");
+
+    if (groups.length === 0) {
+      addToReport(
+        `#### The template hasn't groups`,
+        `The template hasn't groups`,
+      );
+    }
+
+    isFieldInMoreThanOneGroup(allGroupsFields, form);
+
+    groups.forEach((group) => {
+      const groupConditions = getConditionsSets(group);
+      const groupName = group.GroupName[0];
+      const isOverrideGroup = groupName.toLowerCase().includes("admin");
+
+      if (!isOverrideGroup) {
+        hasAdminOverride(groupName, groupConditions, form);
+      }
+    });
+    console.log();
+  } catch (error) {
+    console.log("Error in fixGroupsAndConditions", error);
+  }
 }
 
 module.exports = fixGroupsAndConditions;

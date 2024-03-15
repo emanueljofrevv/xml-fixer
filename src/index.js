@@ -115,14 +115,17 @@ async function processXmlFile(path) {
 /* -------------------------------------------------------------------------- */
 
 async function main() {
-  const filePaths = await getAllXMLFilePaths(inputXmlFolderPath);
+  try {
+    const filePaths = await getAllXMLFilePaths(inputXmlFolderPath);
 
-  for (const path of filePaths) {
-    // eslint-disable-next-line no-await-in-loop
-    await processXmlFile(path);
+    for (const path of filePaths) {
+      // eslint-disable-next-line no-await-in-loop
+      await processXmlFile(path);
+    }
+    console.log("All files have been processed!");
+  } catch (error) {
+    console.log(error);
   }
-
-  console.log("finished!");
 }
 
 main();

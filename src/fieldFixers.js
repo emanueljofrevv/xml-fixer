@@ -203,13 +203,20 @@ function hasDefaultText(field) {
   const defaultText = field.Text[0];
   let isDefaultText = false;
 
-  if (fieldType === "FieldCheckbox") {
-    isDefaultText = defaultText.includes("Checkbox");
-  } else if (fieldType === "UserIDStamp") {
-    isDefaultText = defaultText.includes("Signature Stamp");
-  } else if (fieldType === "FormButton") {
-    isDefaultText =
-      defaultText.includes("Next") && !field.Name[0].includes("Next");
+  switch (fieldType) {
+    case "FieldCheckbox":
+      isDefaultText = defaultText.includes("Checkbox");
+      break;
+    case "UserIDStamp":
+      isDefaultText = defaultText.includes("Signature Stamp");
+      break;
+    case "FormButton":
+      isDefaultText =
+        defaultText.includes("Next") && !field.Name[0].includes("Next");
+      break;
+    default:
+      // handle other field types here
+      break;
   }
 
   if (isDefaultText) {

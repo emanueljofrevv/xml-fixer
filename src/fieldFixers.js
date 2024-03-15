@@ -14,7 +14,8 @@ const fixAccessibility = false;
 const fixCase = false;
 const fixTabOrder = false;
 const fixContainerResponsiveFlow = false;
-const PA_EXCEPTIONS = ["MPI", "ACT13", "PB22"];
+const uppercaseExceptionWords = ["of", "to", "a", "and", "the", "in", "on"];
+const PA_EXCEPTIONS = ["MPI", "ACT13", "PB22", "DBA"];
 const WA_EXCEPTIONS = ["DP"];
 const titleCaseExceptions = [
   "ID",
@@ -28,6 +29,7 @@ const titleCaseExceptions = [
   "CSV",
   ...PA_EXCEPTIONS,
   ...WA_EXCEPTIONS,
+  ...uppercaseExceptionWords,
 ];
 
 /* -------------------------------------------------------------------------- */
@@ -238,9 +240,11 @@ function isLabelOverlaping(field, fields) {
     const topAproxEqual = Math.abs(fieldTop - lblTop) <= 15;
     const borderAproxOverlap = lblRight - fieldLeft >= 5;
     const isLabel = f.$["xsi:type"] === "FieldLabel";
+    const isFormStamp = f.$["xsi:type"] === "FormIDStamp";
 
     if (
       !isLabel &&
+      !isFormStamp &&
       topAproxEqual &&
       borderAproxOverlap &&
       fieldLeft > lblLeft
@@ -403,6 +407,7 @@ function fixCheckbox(form, pIndex, fieldIndex) {
 
 function fixContainer(form, pIndex, fieldIndex) {
   const oneColumnResponsiveFlow = "3";
+  const twoColumnResponsiveFlow = "4";
   const fields = getFields(form, pIndex);
   const field = fields[fieldIndex];
   const fieldID = field.ID[0];
@@ -411,7 +416,11 @@ function fixContainer(form, pIndex, fieldIndex) {
   const hasMoreThan1field =
     fields.filter((f) => f.ContainerId[0] === fieldID).length > 1;
 
-  if (hasMoreThan1field && responsiveFlow !== oneColumnResponsiveFlow) {
+  if (
+    hasMoreThan1field &&
+    responsiveFlow !== oneColumnResponsiveFlow &&
+    responsiveFlow !== twoColumnResponsiveFlow
+  ) {
     if (fixContainerResponsiveFlow) {
       // Set responsive flow to "1 column"
       form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
@@ -424,7 +433,7 @@ function fixContainer(form, pIndex, fieldIndex) {
     } else {
       addToReport(
         `#### ${fieldName}`,
-        `The container has more than 1 field and its \`Responsive Flow\` is not set to \`1 Column\`.`,
+        `The container has more than 1 field and its \`Responsive Flow\` is not set to \`1 Column\` or \`2 Columns\`.`,
       );
     }
   }

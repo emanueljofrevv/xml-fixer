@@ -88,7 +88,7 @@ function hasAdminOverride(groupName, groupConditions, form) {
   if (!hasOverride) {
     addToReport(
       `#### ${groupName}`,
-      `Group \`${groupName}\` does not have an admin override`,
+      `The group does not have an admin override condition.`,
     );
   }
 }
@@ -108,7 +108,7 @@ function isFieldInMoreThanOneGroup(fields, form) {
   });
 
   duplicatedFields.forEach((value, key) => {
-    addToReport(`#### ${key}`, `Field \`${key}\` is in more than one group`);
+    addToReport(`#### ${key}`, `Field \`${key}\` is in more than one group.`);
   });
 }
 
@@ -138,8 +138,11 @@ function fixGroupsAndConditions(form) {
   groups.forEach((group) => {
     const groupConditions = getConditionsSets(group);
     const groupName = group.GroupName[0];
+    const isOverrideGroup = groupName.toLowerCase().includes("admin");
 
-    hasAdminOverride(groupName, groupConditions, form);
+    if (!isOverrideGroup) {
+      hasAdminOverride(groupName, groupConditions, form);
+    }
   });
 
   console.log();

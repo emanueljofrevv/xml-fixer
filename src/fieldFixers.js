@@ -462,6 +462,9 @@ function fixDataGrid(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
   hasDefaultName(fieldName, "FieldDataGrid");
+  form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+
+  return form;
 }
 
 function fixDropdown(form, pIndex, fieldIndex) {
@@ -489,6 +492,9 @@ function fixFormIDStamp(form, pIndex, fieldIndex) {
 
   checkDistanceToBorder(form, field);
   hasDefaultName(fieldName);
+  form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+
+  return form;
 }
 
 function fixImage(form, pIndex, fieldIndex) {
@@ -497,6 +503,9 @@ function fixImage(form, pIndex, fieldIndex) {
 
   checkDistanceToBorder(form, field);
   hasDefaultName(fieldName, "ImageFormControl");
+  form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+
+  return form;
 }
 
 function fixLabel(form, pIndex, fieldIndex) {
@@ -504,6 +513,8 @@ function fixLabel(form, pIndex, fieldIndex) {
   const field = fields[fieldIndex];
 
   isLabelOverlaping(field, fields);
+
+  return form;
 }
 
 function fixRRC(form, pIndex, fieldIndex) {
@@ -511,6 +522,9 @@ function fixRRC(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   hasDefaultName(fieldName, "RepeatingRowControl");
+  form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+
+  return form;
 }
 
 function fixSignatureStamp(form, pIndex, fieldIndex) {
@@ -519,6 +533,9 @@ function fixSignatureStamp(form, pIndex, fieldIndex) {
   hasDefaultText(field);
   checkDistanceToBorder(form, field);
   hasDefaultName(fieldName);
+  form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+
+  return form;
 }
 
 function fixTextArea(form, pIndex, fieldIndex) {
@@ -568,6 +585,7 @@ function fixUploadButton(form, pIndex, fieldIndex) {
   form = checkTabOrder(form, field, pIndex, fieldIndex);
   checkDistanceToBorder(form, field);
   hasDefaultName(fieldName, "UploadButton");
+  form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
 
   if (!isSimpleUpload) {
     if (fixSimpleUploadButton) {

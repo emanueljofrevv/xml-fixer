@@ -64,6 +64,43 @@ function checkAccessibility(form, pIndex, fieldIndex, fix = false) {
         `The field has no \`Accessibility Label\`.`,
       );
     }
+  } else {
+    const field = getPageFields(form, pIndex)[fieldIndex];
+    const fieldType = field.$["xsi:type"];
+    const excludedFieldTypes = [
+      "FieldLabel",
+      "FormIDStamp",
+      "FormButton",
+      "FieldContainer",
+      "FieldCheckbox",
+      "ImageFormControl",
+      "RepeatingRowControl",
+      "FieldDataGrid",
+      "UploadButton",
+    ];
+
+    if (!excludedFieldTypes.includes(fieldType)) {
+      const fields = getPageFields(form, pIndex);
+      const fieldLabel = findFieldLabeByProximity(field, fields);
+      const labelText = fieldLabel
+        ? fieldLabel.Text[0].split("<")[0].split(":")[0]
+        : "";
+      const wordingMatch = labelText
+        ? labelText.includes(accessibilityLabel)
+        : true;
+
+      if (!wordingMatch) {
+        addToReport(
+          `#### ${fieldName}`,
+          `The \`Accessibility Label\` of the field does not match its label's \`Label Text\`.
+
+        
+          Accessibility Label = ${accessibilityLabel}
+          Label Text = ${labelText}
+          `,
+        );
+      }
+    }
   }
   return form;
 }
@@ -103,6 +140,59 @@ function checkTabOrder(form, field, pageIndex, fieldIndex) {
   }
 
   return form;
+}
+
+function findFieldLabeByProximity(field, fields) {
+  const fieldTop = Number(field.LayoutTop[0]);
+  const fieldLeft = Number(field.LayoutLeft[0]);
+  const onlyLabels = fields.filter((f) => f.$["xsi:type"] === "FieldLabel");
+
+  const fieldLabel = onlyLabels.find((f) => {
+    const labelTop = Number(f.LayoutTop[0]);
+    const labelLeft = Number(f.LayoutLeft[0]);
+    const labelWidth = Number(f.Width[0]);
+    const labelRight = labelLeft + labelWidth;
+    const isAboutSameHeight = Math.abs(labelTop - fieldTop) <= 15;
+    const isProximate = Math.abs(fieldLeft - labelRight) <= 60;
+
+    return isProximate && isAboutSameHeight;
+  });
+
+  return fieldLabel;
+}
+
+function findLabelFieldByProximity(label, fields) {
+  const labelTop = Number(label.LayoutTop[0]);
+  const labelLeft = Number(label.LayoutLeft[0]);
+  const labelWidth = Number(label.Width[0]);
+  const labelRight = labelLeft + labelWidth;
+  const excludedFieldTypes = [
+    "FieldLabel",
+    "FormIDStamp",
+    "FormButton",
+    "FieldContainer",
+    "FieldCheckbox",
+    "ImageFormControl",
+    "RepeatingRowControl",
+    "FieldDataGrid",
+    "UploadButton",
+  ];
+
+  const filteredFields = fields.filter((f) => {
+    const fieldType = f.$["xsi:type"];
+    return !excludedFieldTypes.includes(fieldType);
+  });
+
+  const field = filteredFields.find((f) => {
+    const fieldTop = Number(f.LayoutTop[0]);
+    const fieldLeft = Number(f.LayoutLeft[0]);
+    const isAboutSameHeight = Math.abs(labelTop - fieldTop) <= 15;
+    const isProximate = fieldLeft - labelRight <= 100;
+
+    return isProximate && isAboutSameHeight && fieldLeft > labelLeft;
+  });
+
+  return field;
 }
 
 function fixTitleCase(form, pIndex, fieldIndex) {
@@ -536,11 +626,11 @@ function fixImage(form, pIndex, fieldIndex) {
   return form;
 }
 
-function fixLabel(form, pIndex, fieldIndex) {
+function fixLabel(form, pIndex, labelIndex) {
   const fields = getPageFields(form, pIndex);
-  const field = fields[fieldIndex];
+  const label = fields[labelIndex];
 
-  isLabelOverlaping(field, fields);
+  isLabelOverlaping(label, fields);
 
   return form;
 }

@@ -11,24 +11,30 @@ This project is a utility tool designed to automate the process of fixing common
 
 ### Components and Fields
 
-| Configuration/Standard  | Action     | Buttons | Calendar | Cell | Checkbox | Container | Data Grid | Drop-down | Form ID Stamp | Image | Labels | RRC | Signature Stamp | Textbox | Text Area | Upload Buttons |
-| ----------------------- | ---------- | :-----: | :------: | :--: | :------: | :-------: | :-------: | :-------: | :-----------: | :---: | :----: | :-: | :-------------: | :-----: | :-------: | :------------: |
-| Accessibility Label     | Report/Fix |   ✅    |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |               |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |       ✅       |
-| Default Name            | Report     |   ✅    |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |      ✅       |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |       ✅       |
-| Default Text            | Report     |   ✅    |          |      |    ✅    |           |           |           |               |       |        |     |       ✅        |         |           |                |
-| Label Overlapping Field | Report     |         |          |      |          |           |           |           |               |       |   ✅   |     |                 |         |           |                |
-| Responsive Flow         | Report/Fix |         |          |      |          |    ✅     |           |           |               |       |        |     |                 |         |           |                |
-| Right Border Proximity  | Report     |   ✅    |    ✅    |  ✅  |    ✅    |           |           |    ✅     |      ✅       |  ✅   |        |     |       ✅        |   ✅    |    ✅     |       ✅       |
-| Simple Upload           | Report/Fix |         |          |      |          |           |           |           |               |       |        |     |                 |         |           |       ✅       |
-| Spelling                | Report     |         |    ✅    |  ✅  |    ✅    |           |           |    ✅     |      ✅       |       |        |     |                 |   ✅    |    ✅     |                |
-| Tab Order               | Report/Fix |   ✅    |    ✅    |  ✅  |    ✅    |           |           |    ✅     |               |       |        |     |       ✅        |   ✅    |    ✅     |       ✅       |
-| Title Case Name         | Report/Fix |         |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |      ✅       |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |                |
+| Configuration/Standard                      | Action     | Buttons | Calendar | Cell | Checkbox | Container | Data Grid | Drop-down | Form ID Stamp | Image | Labels | RRC | Signature Stamp | Textbox | Text Area | Upload Buttons |
+| ------------------------------------------- | ---------- | :-----: | :------: | :--: | :------: | :-------: | :-------: | :-------: | :-----------: | :---: | :----: | :-: | :-------------: | :-----: | :-------: | :------------: |
+| Accessibility Label Existence               | Report/Fix |   ✅    |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |               |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |       ✅       |
+| Accessibility Label and Label Text Matching | Report/Fix |   ✅    |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |               |  ✅   |   ✅   | ✅  |       ✅        |   ✅    |    ✅     |       ✅       |
+| Default Name                                | Report     |   ✅    |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |      ✅       |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |       ✅       |
+| Default Text                                | Report     |   ✅    |          |      |    ✅    |           |           |           |               |       |        |     |       ✅        |         |           |                |
+| Label Overlapping Field                     | Report     |         |          |      |          |           |           |           |               |       |   ✅   |     |                 |         |           |                |
+| Responsive Flow                             | Report/Fix |         |          |      |          |    ✅     |           |           |               |       |        |     |                 |         |           |                |
+| Right Border Proximity                      | Report     |   ✅    |    ✅    |  ✅  |    ✅    |           |           |    ✅     |      ✅       |  ✅   |        |     |       ✅        |   ✅    |    ✅     |       ✅       |
+| Simple Upload                               | Report/Fix |         |          |      |          |           |           |           |               |       |        |     |                 |         |           |       ✅       |
+| Spelling                                    | Report     |         |    ✅    |  ✅  |    ✅    |           |           |    ✅     |      ✅       |       |        |     |                 |   ✅    |    ✅     |                |
+| Tab Order                                   | Report/Fix |   ✅    |    ✅    |  ✅  |    ✅    |           |           |    ✅     |               |       |        |     |       ✅        |   ✅    |    ✅     |       ✅       |
+| Title Case Name                             | Report/Fix |         |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |      ✅       |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |                |
 
 #### Notes:
 
 Description of configurations/standards. The table above has priority over the preconditions listed here.
 
-- **Accessibility Label**: Fields that should have a `Accessibility Label Text` value in the `Accessibility` configurations.
+- **Accessibility Label Existence**: Fields that should have a `Accessibility Label Text` value in the `Accessibility` configurations.
+  - Preconditions:
+    - `Name` must have a non-default value.
+    - `Name` must be on title case.
+    - `Name` must have no spelling errors.
+- **Accessibility Label and Label Text Matching**: The field's `Accessibility Label Text` mus match the `Label Text` value.
   - Preconditions:
     - `Name` must have a non-default value.
     - `Name` must be on title case.

@@ -21,11 +21,13 @@ function clearReport() {
   report.clear();
 }
 
-function generateReport(data) {
+function generateReport(data, fileName) {
   let markdown = ``;
+  let fieldsCount = 0;
   let issuesCount = 0;
 
   data.forEach((value, key) => {
+    fieldsCount += 1;
     // Add the subheader
     markdown += `${key}\n`;
     value.forEach((msg, i) => {
@@ -40,7 +42,10 @@ function generateReport(data) {
   });
 
   // append to the beginning of the report the header
-  markdown = `> Total Issues Found: ${issuesCount}\n\n${markdown}\n`;
+  markdown = `# ${fileName}
+  > ### **Report Stats**
+  > - **Total Fields With Issues**: ${fieldsCount}
+  > - **Total Issues Found**: ${issuesCount}\n\n${markdown}`;
 
   return markdown;
 }

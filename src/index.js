@@ -91,9 +91,6 @@ async function processXmlFile(path) {
   const jsonData = await convertXmlToJson(data);
   const formEntity = jsonData.FormEntity;
 
-  // Add the report header
-  addToReport(`# ${fileName} Report`, "");
-
   // Analyze the XML and fix the fields
   jsonData.FormEntity = fixFields(formEntity);
   fixGroupsAndConditions(formEntity);
@@ -104,7 +101,7 @@ async function processXmlFile(path) {
   // Create files
   const xmlPath = `${outputXmlPath + fileName}.xml`;
   const reportPath = `${outputReportPath + fileName}.md`;
-  const reportData = await generateReport(report);
+  const reportData = await generateReport(report, fileName);
   await writeFile(reportPath, reportData);
   await writeFile(xmlPath, xml);
   clearReport();

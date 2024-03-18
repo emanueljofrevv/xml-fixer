@@ -20,7 +20,7 @@ const fix = {
 // Exceptions to the Title Case rule
 const uppercaseExceptionWords = ["of", "to", "a", "and", "the", "in", "on"];
 const PA_EXCEPTIONS = ["MPI", "ACT13", "PB22", "DBA"];
-const WA_EXCEPTIONS = ["DP"];
+const WA_EXCEPTIONS = ["DP", "Auth"];
 const titleCaseExceptions = [
   "ID",
   "SSN",
@@ -88,7 +88,7 @@ function createAccTextWithLabel(form, pIndex, fieldIndex, fieldName) {
   newAccText = cleanedLabelText.trim();
 
   if (isRequired) {
-    newAccText += ". Required Field.";
+    newAccText += " Required Field";
   }
 
   return newAccText;
@@ -241,17 +241,6 @@ function findLabelFieldByProximity(labelData, fields) {
   const labelLeft = Number(labelData.LayoutLeft[0]);
   const labelWidth = Number(labelData.Width[0]);
   const labelRight = labelLeft + labelWidth;
-  const noLabelFields = [
-    "FieldLabel",
-    "FormIDStamp",
-    "FormButton",
-    "FieldContainer",
-    "FieldCheckbox",
-    "ImageFormControl",
-    "RepeatingRowControl",
-    "FieldDataGrid",
-    "UploadButton",
-  ];
 
   const filteredFields = fields.filter((f) => {
     const fieldType = f.$["xsi:type"];
@@ -457,7 +446,7 @@ function isStrTitleCase(fieldName) {
   });
 }
 
-function isTitleCase(fieldName) {
+function checkTitleCase(fieldName) {
   // Split the string into an array of words
   const words = fieldName.split(" ");
 
@@ -558,7 +547,7 @@ function button(form, pIndex, fieldIndex) {
   form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
+    if (!checkTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     form = checkAccessibility(form, pIndex, fieldIndex);
@@ -577,7 +566,7 @@ function calendar(form, pIndex, fieldIndex) {
   form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
+    if (!checkTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     if (!hasSpellingError(fieldName)) {
@@ -596,7 +585,7 @@ function cell(form, pIndex, fieldIndex) {
   form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
+    if (!checkTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     if (!hasSpellingError(fieldName)) {
@@ -616,7 +605,7 @@ function checkbox(form, pIndex, fieldIndex) {
   form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
+    if (!checkTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     if (!hasSpellingError(fieldName)) {
@@ -667,7 +656,7 @@ function datagrid(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName, "FieldDataGrid")) {
-    if (!isTitleCase(fieldName)) {
+    if (!checkTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     form = checkAccessibility(form, pIndex, fieldIndex);
@@ -684,7 +673,7 @@ function dropdown(form, pIndex, fieldIndex) {
   form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
+    if (!checkTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     if (!hasSpellingError(fieldName)) {
@@ -702,7 +691,7 @@ function formIDStamp(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
+    if (!checkTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     hasSpellingError(fieldName);
@@ -718,7 +707,7 @@ function image(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName, "ImageFormControl")) {
-    if (!isTitleCase(fieldName)) {
+    if (!checkTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     form = checkAccessibility(form, pIndex, fieldIndex);
@@ -740,7 +729,7 @@ function rowRepeatingControl(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName, "RepeatingRowControl")) {
-    if (!isTitleCase(fieldName)) {
+    if (!checkTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     if (!hasSpellingError(fieldName)) {
@@ -759,7 +748,7 @@ function signatureStamp(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
+    if (!checkTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     form = checkAccessibility(form, pIndex, fieldIndex);
@@ -776,7 +765,7 @@ function textArea(form, pIndex, fieldIndex) {
   form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
+    if (!checkTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     if (!hasSpellingError(fieldName)) {
@@ -795,7 +784,7 @@ function textbox(form, pIndex, fieldIndex) {
   form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
-    if (!isTitleCase(fieldName)) {
+    if (!checkTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     if (!hasSpellingError(fieldName)) {
@@ -816,7 +805,7 @@ function uploadButton(form, pIndex, fieldIndex) {
   checkDistanceToBorder(form, field);
 
   if (!hasDefaultName(fieldName, "UploadButton")) {
-    if (!isTitleCase(fieldName)) {
+    if (!checkTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     form = checkAccessibility(form, pIndex, fieldIndex);

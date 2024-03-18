@@ -23,11 +23,13 @@ function clearReport() {
 
 function generateReport(data) {
   let markdown = ``;
+  let issuesCount = 0;
 
   data.forEach((value, key) => {
     // Add the subheader
     markdown += `${key}\n`;
     value.forEach((msg, i) => {
+      issuesCount += 1;
       if (msg) {
         // Add the message
         markdown += `${i + 1}. ${msg}\n`;
@@ -36,6 +38,9 @@ function generateReport(data) {
       }
     });
   });
+
+  // append to the beginning of the report the header
+  markdown = `> Total Issues Found: ${issuesCount}\n\n${markdown}\n`;
 
   return markdown;
 }

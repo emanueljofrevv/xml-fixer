@@ -9,11 +9,13 @@ const { addToReport } = require("./report");
 /*                              GLOBAL VARIABLES                              */
 /* -------------------------------------------------------------------------- */
 
-const fixSimpleUploadButton = true;
-const fixAccessibility = false;
-const fixCase = false;
-const fixTabOrder = false;
-const fixContainerResponsiveFlow = false;
+const fix = {
+  accessibilityLabel: false,
+  case: false,
+  responsiveFlow: false,
+  simpleUpload: true,
+  tabOrder: false,
+};
 
 // Exceptions to the Title Case rule
 const uppercaseExceptionWords = ["of", "to", "a", "and", "the", "in", "on"];
@@ -38,13 +40,13 @@ const titleCaseExceptions = [
 /*                              HELPER FUNCTIONS                              */
 /* -------------------------------------------------------------------------- */
 
-function checkAccessibility(form, pIndex, fieldIndex, fix = false) {
+function checkAccessibility(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
   const accessibilityLabel = getAccesibilityLabel(form, pIndex, fieldIndex);
   let newAccessibilityLabel = fieldName;
 
   if (!accessibilityLabel) {
-    if (fix) {
+    if (fix.accessibilityLabel) {
       const fieldLabel = getLabelByFieldByName(form, fieldName);
       if (fieldLabel && fieldLabel.includes("*")) {
         newAccessibilityLabel += ". Required Field.";
@@ -125,7 +127,7 @@ function checkTabOrder(form, field, pageIndex, fieldIndex) {
   const tabOrder = Number(field.TabOrder[0]);
 
   if (tabOrder !== 0) {
-    if (fixTabOrder) {
+    if (fix.tabOrder) {
       form.FormPages[0].FormPage[pageIndex].FieldList[0].BaseField[
         fieldIndex
       ].TabOrder[0] = 0;
@@ -198,7 +200,7 @@ function findLabelFieldByProximity(label, fields) {
 function fixTitleCase(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
-  if (fixCase) {
+  if (fix.case) {
     const titleCaseFieldName = strToTitleCase(fieldName);
 
     form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
@@ -234,7 +236,7 @@ function getPageFields(form, pIndex) {
 
 function getLabelByFieldByName(form, fieldName) {
   const fields = form.FormPages[0].FormPage[0].FieldList[0].BaseField;
-  let label;
+  let labelData;
 
   fields.forEach((field) => {
     const fieldType = field.$["xsi:type"];
@@ -248,12 +250,12 @@ function getLabelByFieldByName(form, fieldName) {
         Math.abs(field.LayoutTop[0] - labelLayoutTop) <= 15;
 
       if (namePartialMatch && similarTopDistance) {
-        label = labelText;
+        labelData = labelText;
       }
     }
   });
 
-  return label;
+  return labelData;
 }
 
 function getPropertyValueByPropetyName(field, propertyName) {
@@ -447,10 +449,10 @@ function hasSpellingError(fieldName) {
 }
 
 /* -------------------------------------------------------------------------- */
-/*                                   FIXERS                                   */
+/*                         FIELD TYPES HELPER FUNCTION                        */
 /* -------------------------------------------------------------------------- */
 
-function fixButton(form, pIndex, fieldIndex) {
+function button(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
   const field = getPageFields(form, pIndex)[fieldIndex];
 
@@ -461,7 +463,7 @@ function fixButton(form, pIndex, fieldIndex) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
-    form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    form = checkAccessibility(form, pIndex, fieldIndex);
   }
 
   hasDefaultText(field);
@@ -469,7 +471,7 @@ function fixButton(form, pIndex, fieldIndex) {
   return form;
 }
 
-function fixCalendar(form, pIndex, fieldIndex) {
+function calendar(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
   const field = getPageFields(form, pIndex)[fieldIndex];
 
@@ -481,14 +483,14 @@ function fixCalendar(form, pIndex, fieldIndex) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     if (!hasSpellingError(fieldName)) {
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+      form = checkAccessibility(form, pIndex, fieldIndex);
     }
   }
 
   return form;
 }
 
-function fixCell(form, pIndex, fieldIndex) {
+function cell(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
@@ -500,14 +502,14 @@ function fixCell(form, pIndex, fieldIndex) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     if (!hasSpellingError(fieldName)) {
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+      form = checkAccessibility(form, pIndex, fieldIndex);
     }
   }
 
   return form;
 }
 
-function fixCheckbox(form, pIndex, fieldIndex) {
+function checkbox(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
   const field = getPageFields(form, pIndex)[fieldIndex];
 
@@ -520,14 +522,14 @@ function fixCheckbox(form, pIndex, fieldIndex) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     if (!hasSpellingError(fieldName)) {
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+      form = checkAccessibility(form, pIndex, fieldIndex);
     }
   }
 
   return form;
 }
 
-function fixContainer(form, pIndex, fieldIndex) {
+function container(form, pIndex, fieldIndex) {
   const oneColumnResponsiveFlow = "3";
   const twoColumnResponsiveFlow = "4";
   const fields = getPageFields(form, pIndex);
@@ -543,7 +545,7 @@ function fixContainer(form, pIndex, fieldIndex) {
     responsiveFlow !== oneColumnResponsiveFlow &&
     responsiveFlow !== twoColumnResponsiveFlow
   ) {
-    if (fixContainerResponsiveFlow) {
+    if (fix.responsiveFlow) {
       // Set responsive flow to "1 column"
       form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
         fieldIndex
@@ -563,20 +565,20 @@ function fixContainer(form, pIndex, fieldIndex) {
   return form;
 }
 
-function fixDataGrid(form, pIndex, fieldIndex) {
+function datagrid(form, pIndex, fieldIndex) {
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName, "FieldDataGrid")) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
-    form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    form = checkAccessibility(form, pIndex, fieldIndex);
   }
 
   return form;
 }
 
-function fixDropdown(form, pIndex, fieldIndex) {
+function dropdown(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
@@ -588,14 +590,14 @@ function fixDropdown(form, pIndex, fieldIndex) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     if (!hasSpellingError(fieldName)) {
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+      form = checkAccessibility(form, pIndex, fieldIndex);
     }
   }
 
   return form;
 }
 
-function fixFormIDStamp(form, pIndex, fieldIndex) {
+function formIDStamp(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
@@ -611,7 +613,7 @@ function fixFormIDStamp(form, pIndex, fieldIndex) {
   return form;
 }
 
-function fixImage(form, pIndex, fieldIndex) {
+function image(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
@@ -621,21 +623,21 @@ function fixImage(form, pIndex, fieldIndex) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
-    form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    form = checkAccessibility(form, pIndex, fieldIndex);
   }
   return form;
 }
 
-function fixLabel(form, pIndex, labelIndex) {
+function label(form, pIndex, labelIndex) {
   const fields = getPageFields(form, pIndex);
-  const label = fields[labelIndex];
+  const labelData = fields[labelIndex];
 
-  isLabelOverlaping(label, fields);
+  isLabelOverlaping(labelData, fields);
 
   return form;
 }
 
-function fixRRC(form, pIndex, fieldIndex) {
+function rowRepeatingControl(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
@@ -644,14 +646,14 @@ function fixRRC(form, pIndex, fieldIndex) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     if (!hasSpellingError(fieldName)) {
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+      form = checkAccessibility(form, pIndex, fieldIndex);
     }
   }
 
   return form;
 }
 
-function fixSignatureStamp(form, pIndex, fieldIndex) {
+function signatureStamp(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
@@ -662,13 +664,13 @@ function fixSignatureStamp(form, pIndex, fieldIndex) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
-    form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    form = checkAccessibility(form, pIndex, fieldIndex);
   }
 
   return form;
 }
 
-function fixTextArea(form, pIndex, fieldIndex) {
+function textArea(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
@@ -680,14 +682,14 @@ function fixTextArea(form, pIndex, fieldIndex) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     if (!hasSpellingError(fieldName)) {
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+      form = checkAccessibility(form, pIndex, fieldIndex);
     }
   }
 
   return form;
 }
 
-function fixTextbox(form, pIndex, fieldIndex) {
+function textbox(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
 
@@ -699,14 +701,14 @@ function fixTextbox(form, pIndex, fieldIndex) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
     if (!hasSpellingError(fieldName)) {
-      form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+      form = checkAccessibility(form, pIndex, fieldIndex);
     }
   }
 
   return form;
 }
 
-function fixUploadButton(form, pIndex, fieldIndex) {
+function uploadButton(form, pIndex, fieldIndex) {
   const field = getPageFields(form, pIndex)[fieldIndex];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
   const isSimpleUpload =
@@ -719,11 +721,11 @@ function fixUploadButton(form, pIndex, fieldIndex) {
     if (!isTitleCase(fieldName)) {
       form = fixTitleCase(form, pIndex, fieldIndex);
     }
-    form = checkAccessibility(form, pIndex, fieldIndex, fixAccessibility);
+    form = checkAccessibility(form, pIndex, fieldIndex);
   }
 
   if (!isSimpleUpload) {
-    if (fixSimpleUploadButton) {
+    if (fix.simpleUpload) {
       form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
         fieldIndex
       ].DisplayUploadedFiles[0] = false;
@@ -759,27 +761,29 @@ function fixFields(form) {
         const fieldType = field.$["xsi:type"];
 
         const fieldActions = {
-          CellField: (f, i, j) => fixCell(f, i, j),
-          FieldCalendar3: (f, i, j) => fixCalendar(f, i, j),
-          FieldCheckbox: (f, i, j) => fixCheckbox(f, i, j),
-          FieldContainer: (f, i, j) => fixContainer(f, i, j),
-          FieldDataGrid: (f, i, j) => fixDataGrid(f, i, j),
-          FieldDropDownList3: (f, i, j) => fixDropdown(f, i, j),
-          FieldLabel: (f, i, j) => fixLabel(f, i, j),
-          FieldTextArea3: (f, i, j) => fixTextArea(f, i, j),
-          FieldTextbox3: (f, i, j) => fixTextbox(f, i, j),
-          FormButton: (f, i, j) => fixButton(f, i, j),
-          FormIDStamp: (f, i, j) => fixFormIDStamp(f, i, j),
-          ImageFormControl: (f, i, j) => fixImage(f, i, j),
-          RepeatingRowControl: (f, i, j) => fixRRC(f, i, j),
-          UploadButton: (f, i, j) => fixUploadButton(f, i, j),
-          UserIDStamp: (f, i, j) => fixSignatureStamp(f, i, j),
+          CellField: (f, i, j) => cell(f, i, j),
+          FieldCalendar3: (f, i, j) => calendar(f, i, j),
+          FieldCheckbox: (f, i, j) => checkbox(f, i, j),
+          FieldContainer: (f, i, j) => container(f, i, j),
+          FieldDataGrid: (f, i, j) => datagrid(f, i, j),
+          FieldDropDownList3: (f, i, j) => dropdown(f, i, j),
+          FieldLabel: (f, i, j) => label(f, i, j),
+          FieldTextArea3: (f, i, j) => textArea(f, i, j),
+          FieldTextbox3: (f, i, j) => textbox(f, i, j),
+          FormButton: (f, i, j) => button(f, i, j),
+          FormIDStamp: (f, i, j) => formIDStamp(f, i, j),
+          ImageFormControl: (f, i, j) => image(f, i, j),
+          RepeatingRowControl: (f, i, j) => rowRepeatingControl(f, i, j),
+          UploadButton: (f, i, j) => uploadButton(f, i, j),
+          UserIDStamp: (f, i, j) => signatureStamp(f, i, j),
         };
 
         const action = fieldActions[fieldType];
 
         if (action) {
           form = action(form, pageIndex, fieldIndex) || form;
+        } else {
+          console.log(`${fieldType} type not found.`);
         }
       });
     });

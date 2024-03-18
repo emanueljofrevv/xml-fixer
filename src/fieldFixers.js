@@ -10,10 +10,10 @@ const { addToReport } = require("./report");
 /* -------------------------------------------------------------------------- */
 
 const fix = {
-  accessibilityLabel: false,
+  accessibilityLabel: true,
   case: false,
   responsiveFlow: false,
-  simpleUpload: true,
+  simpleUpload: false,
   tabOrder: false,
 };
 
@@ -35,75 +35,102 @@ const titleCaseExceptions = [
   ...WA_EXCEPTIONS,
   ...uppercaseExceptionWords,
 ];
+const noLabelFields = [
+  "FieldLabel",
+  "FormIDStamp",
+  "FormButton",
+  "FieldContainer",
+  "FieldCheckbox",
+  "ImageFormControl",
+  "RepeatingRowControl",
+  "FieldDataGrid",
+  "UploadButton",
+];
+const noTitleCaseFields = [
+  "FieldLabel",
+  "FormIDStamp",
+  "FormButton",
+  "FieldContainer",
+  "RepeatingRowControl",
+  "FieldDataGrid",
+  "UploadButton",
+];
 
 /* -------------------------------------------------------------------------- */
 /*                              HELPER FUNCTIONS                              */
 /* -------------------------------------------------------------------------- */
 
+function createAccTextWithLabel(form, pIndex, fieldIndex, fieldName) {
+  const field = getPageFields(form, pIndex)[fieldIndex];
+  const fields = getPageFields(form, pIndex);
+  const fieldLabel = findFieldLabeByProximity(field, fields);
+  const labelText = fieldLabel ? fieldLabel.Text[0] : "";
+  const isLabelRequired = labelText && labelText.includes("*");
+  const cleanedLabelText = labelText.split("<")[0].split(":")[0];
+  let newAccText = "";
+
+  if (cleanedLabelText) {
+    newAccText = cleanedLabelText;
+
+    if (isLabelRequired) {
+      newAccText += ". Required Field.";
+    }
+  }
+
+  return newAccText;
+}
+
 function checkAccessibility(form, pIndex, fieldIndex) {
+  const field = getPageFields(form, pIndex)[fieldIndex];
+  const fieldType = field.$["xsi:type"];
   const fieldName = getFieldName(form, pIndex, fieldIndex);
-  const accessibilityLabel = getAccesibilityLabel(form, pIndex, fieldIndex);
-  let newAccessibilityLabel = fieldName;
+  const fieldHasLabel = !noLabelFields.includes(fieldType);
+  const fieldNameCanBeUsed = !noTitleCaseFields.includes(fieldType);
+  let currentAccText = getAccesibilityText(form, pIndex, fieldIndex);
+  let newAccText = "";
 
-  if (!accessibilityLabel) {
-    if (fix.accessibilityLabel) {
-      const fieldLabel = getLabelByFieldByName(form, fieldName);
-      if (fieldLabel && fieldLabel.includes("*")) {
-        newAccessibilityLabel += ". Required Field.";
-      }
+  if (fieldHasLabel) {
+    newAccText = createAccTextWithLabel(form, pIndex, fieldIndex, fieldName);
+  }
 
+  if (!newAccText) {
+    newAccText = fieldName;
+  }
+
+  if (!currentAccText) {
+    if (fix.accessibilityLabel && fieldNameCanBeUsed) {
       form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
         fieldIndex
-      ].AccessibilityLabel[0] = newAccessibilityLabel;
+      ].AccessibilityLabel[0] = newAccText;
+      currentAccText = newAccText;
 
       addToReport(
         `#### ${fieldName}`,
-        `The \`Accessibility Label\` was set to \`${newAccessibilityLabel}\`.`,
+        `The \`Accessibility Label\` was set to \`'${newAccText}'\`.`,
+      );
+    } else {
+      addToReport(`#### ${fieldName}`, `The \`Accessibility Label\` is empty.`);
+    }
+  }
+
+  if (currentAccText !== newAccText && fieldNameCanBeUsed) {
+    if (fix.accessibilityLabel) {
+      form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
+        fieldIndex
+      ].AccessibilityLabel[0] = newAccText;
+
+      addToReport(
+        `#### ${fieldName}`,
+        `The \`Accessibility Label\` was changed from \`'${currentAccText}'\` to \`'${newAccText}'\`.`,
       );
     } else {
       addToReport(
         `#### ${fieldName}`,
-        `The field has no \`Accessibility Label\`.`,
+        `The current \`Accessibility Label\` value \`'${currentAccText}'\` does not match with the recommended value \`'${newAccText}'\`.`,
       );
     }
-  } else {
-    const field = getPageFields(form, pIndex)[fieldIndex];
-    const fieldType = field.$["xsi:type"];
-    const excludedFieldTypes = [
-      "FieldLabel",
-      "FormIDStamp",
-      "FormButton",
-      "FieldContainer",
-      "FieldCheckbox",
-      "ImageFormControl",
-      "RepeatingRowControl",
-      "FieldDataGrid",
-      "UploadButton",
-    ];
-
-    if (!excludedFieldTypes.includes(fieldType)) {
-      const fields = getPageFields(form, pIndex);
-      const fieldLabel = findFieldLabeByProximity(field, fields);
-      const labelText = fieldLabel
-        ? fieldLabel.Text[0].split("<")[0].split(":")[0]
-        : "";
-      const wordingMatch = labelText
-        ? labelText.includes(accessibilityLabel)
-        : true;
-
-      if (!wordingMatch) {
-        addToReport(
-          `#### ${fieldName}`,
-          `The \`Accessibility Label\` of the field does not match its label's \`Label Text\`.
-
-        
-          Accessibility Label = ${accessibilityLabel}
-          Label Text = ${labelText}
-          `,
-        );
-      }
-    }
   }
+
   return form;
 }
 
@@ -163,12 +190,12 @@ function findFieldLabeByProximity(field, fields) {
   return fieldLabel;
 }
 
-function findLabelFieldByProximity(label, fields) {
-  const labelTop = Number(label.LayoutTop[0]);
-  const labelLeft = Number(label.LayoutLeft[0]);
-  const labelWidth = Number(label.Width[0]);
+function findLabelFieldByProximity(labelData, fields) {
+  const labelTop = Number(labelData.LayoutTop[0]);
+  const labelLeft = Number(labelData.LayoutLeft[0]);
+  const labelWidth = Number(labelData.Width[0]);
   const labelRight = labelLeft + labelWidth;
-  const excludedFieldTypes = [
+  const noLabelFields = [
     "FieldLabel",
     "FormIDStamp",
     "FormButton",
@@ -182,7 +209,7 @@ function findLabelFieldByProximity(label, fields) {
 
   const filteredFields = fields.filter((f) => {
     const fieldType = f.$["xsi:type"];
-    return !excludedFieldTypes.includes(fieldType);
+    return !noLabelFields.includes(fieldType);
   });
 
   const field = filteredFields.find((f) => {
@@ -216,7 +243,7 @@ function fixTitleCase(form, pIndex, fieldIndex) {
   return form;
 }
 
-function getAccesibilityLabel(form, pIndex, fieldIndex) {
+function getAccesibilityText(form, pIndex, fieldIndex) {
   const fields = getPageFields(form, pIndex);
   const field = fields[fieldIndex];
   const accessibilityLabel = field.AccessibilityLabel[0];

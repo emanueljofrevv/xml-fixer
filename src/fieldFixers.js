@@ -10,7 +10,7 @@ const { addToReport } = require("./report");
 /* -------------------------------------------------------------------------- */
 
 const fix = {
-  accessibilityLabel: true,
+  accessibilityLabel: false,
   case: false,
   responsiveFlow: false,
   simpleUpload: false,
@@ -62,22 +62,54 @@ const noTitleCaseFields = [
 
 function createAccTextWithLabel(form, pIndex, fieldIndex, fieldName) {
   const field = getPageFields(form, pIndex)[fieldIndex];
+  const fieldType = field.$["xsi:type"];
   const fields = getPageFields(form, pIndex);
-  const fieldLabel = findFieldLabeByProximity(field, fields);
-  const labelText = fieldLabel ? fieldLabel.Text[0] : "";
-  const isLabelRequired = labelText && labelText.includes("*");
-  const cleanedLabelText = labelText.split("<")[0].split(":")[0];
+
+  let isRequired = false;
   let newAccText = "";
+  let cleanedLabelText = "";
 
-  if (cleanedLabelText) {
-    newAccText = cleanedLabelText;
+  if (
+    fieldType === "FieldCheckbox" ||
+    fieldType === "FormButton" ||
+    fieldType === "FormIDStamp" ||
+    fieldType === "UploadButton"
+  ) {
+    const [fieldText] = field.Text;
+    isRequired = isRequiredField(field, fieldText);
+    [cleanedLabelText] = fieldText.split("<")[0].split(":");
+  } else {
+    const fieldLabel = findFieldLabeByProximity(field, fields);
+    const labelText = fieldLabel ? fieldLabel.Text[0] : "";
+    isRequired = isRequiredField(field, labelText);
+    [cleanedLabelText] = labelText.split("<")[0].split(":");
+  }
 
-    if (isLabelRequired) {
-      newAccText += ". Required Field.";
-    }
+  newAccText = cleanedLabelText.trim();
+
+  if (isRequired) {
+    newAccText += ". Required Field.";
   }
 
   return newAccText;
+}
+
+function isRequiredField(field, labelText) {
+  const fieldType = field.$["xsi:type"];
+  let isRequired = false;
+
+  if (
+    fieldType === "FieldCheckbox" ||
+    fieldType === "FormButton" ||
+    fieldType === "FormIDStamp" ||
+    fieldType === "UploadButton"
+  ) {
+    isRequired = field.Text[0].includes("*");
+  } else {
+    isRequired = labelText && labelText.includes("*");
+  }
+
+  return isRequired;
 }
 
 function checkAccessibility(form, pIndex, fieldIndex) {
@@ -89,9 +121,7 @@ function checkAccessibility(form, pIndex, fieldIndex) {
   let currentAccText = getAccesibilityText(form, pIndex, fieldIndex);
   let newAccText = "";
 
-  if (fieldHasLabel) {
-    newAccText = createAccTextWithLabel(form, pIndex, fieldIndex, fieldName);
-  }
+  newAccText = createAccTextWithLabel(form, pIndex, fieldIndex, fieldName);
 
   if (!newAccText) {
     newAccText = fieldName;
@@ -113,8 +143,8 @@ function checkAccessibility(form, pIndex, fieldIndex) {
     }
   }
 
-  if (currentAccText !== newAccText && fieldNameCanBeUsed) {
-    if (fix.accessibilityLabel) {
+  if (currentAccText && currentAccText !== newAccText) {
+    if (fix.accessibilityLabel && fieldNameCanBeUsed) {
       form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
         fieldIndex
       ].AccessibilityLabel[0] = newAccText;
@@ -123,11 +153,27 @@ function checkAccessibility(form, pIndex, fieldIndex) {
         `#### ${fieldName}`,
         `The \`Accessibility Label\` was changed from \`'${currentAccText}'\` to \`'${newAccText}'\`.`,
       );
-    } else {
+    } else if (fieldNameCanBeUsed) {
       addToReport(
         `#### ${fieldName}`,
         `The current \`Accessibility Label\` value \`'${currentAccText}'\` does not match with the recommended value \`'${newAccText}'\`.`,
       );
+    } else if (!isStrTitleCase(currentAccText)) {
+      addToReport(
+        `#### ${fieldName}`,
+        `The current \`Accessibility Label\` value \`'${currentAccText}'\` does not follow the accessibility standards.`,
+      );
+    } else {
+      const labelTextCouldBeOk = currentAccText
+        .split(" ")
+        .filter((word) => fieldName.includes(word));
+
+      if (!labelTextCouldBeOk) {
+        addToReport(
+          `#### ${fieldName}`,
+          `The current \`Accessibility Label\` value \`'${currentAccText}'\` needs to be manually reviewed.`,
+        );
+      }
     }
   }
 
@@ -383,6 +429,31 @@ function isLabelOverlaping(field, fields) {
         `The field is overlapping with the label \`${labelName}\`.`,
       );
     }
+  });
+}
+
+function isStrTitleCase(fieldName) {
+  // Split the string into an array of words
+  const words = fieldName.split(" ");
+
+  // Check each word to see if it follows the Title Case pattern
+  words.forEach((word) => {
+    // Check if the word is not empty (to handle multiple spaces)
+    if (word) {
+      // If the first letter is not uppercase or the rest of the word has any uppercase letter, return false
+      const isFirstLetterUppercase = word[0] === word[0].toUpperCase();
+      const isRestOfWordLowercase =
+        word.slice(1) === word.slice(1).toLowerCase();
+
+      if (!isFirstLetterUppercase || !isRestOfWordLowercase) {
+        const includesException = isExceptionWord(word);
+
+        if (!includesException) {
+          return false;
+        }
+      }
+    }
+    return true;
   });
 }
 

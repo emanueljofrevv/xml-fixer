@@ -49,7 +49,7 @@ function getConditionsSets(group) {
 function getFieldNameByID(fieldID, form) {
   const fields = getAllFieldsInForm(form);
   const field = fields.find((f) => f.ID[0] === fieldID);
-  return field.Name[0];
+  return field ? field.Name[0] : "";
 }
 
 function getFieldNameInGroup(field, form) {

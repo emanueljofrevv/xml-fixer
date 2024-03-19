@@ -1,6 +1,7 @@
 # VisualVault XML Fixer
 
 This project is a utility tool designed to automate the process of fixing common issues in Form Templates XML files. It provides a set of features to alert users about potential problems and automatically correct them where possible.
+<br/><br/>
 
 ## 🌟 Features
 
@@ -13,7 +14,7 @@ This project is a utility tool designed to automate the process of fixing common
 
 | Configuration/Standard                      | Action     | Buttons | Calendar | Cell | Checkbox | Container | Data Grid | Drop-down | Form ID Stamp | Image | Labels | RRC | Signature Stamp | Textbox | Text Area | Upload Buttons |
 | ------------------------------------------- | ---------- | :-----: | :------: | :--: | :------: | :-------: | :-------: | :-------: | :-----------: | :---: | :----: | :-: | :-------------: | :-----: | :-------: | :------------: |
-| Accessibility Label Existence               | Report/Fix |   ✅    |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |               |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |       ✅       |
+| Accessibility Label Text                    | Report/Fix |   ✅    |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |               |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |       ✅       |
 | Accessibility Label and Label Text Matching | Report/Fix |   ✅    |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |               |  ✅   |   ✅   | ✅  |       ✅        |   ✅    |    ✅     |       ✅       |
 | Default Name                                | Report     |   ✅    |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |      ✅       |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |       ✅       |
 | Default Text                                | Report     |   ✅    |          |      |    ✅    |           |           |           |               |       |        |     |       ✅        |         |           |                |
@@ -29,12 +30,12 @@ This project is a utility tool designed to automate the process of fixing common
 
 Description of configurations/standards. The table above has priority over the preconditions listed here.
 
-- **Accessibility Label Existence**: Fields that should have a `Accessibility Label Text` value in the `Accessibility` configurations.
+- **Accessibility Label Text**: Fields that should have a `Accessibility Label Text` value in the `Accessibility` configurations.
   - Preconditions:
     - `Name` must have a non-default value.
     - `Name` must be on title case.
     - `Name` must have no spelling errors.
-- **Accessibility Label and Label Text Matching**: The field's `Accessibility Label Text` mus match the `Label Text` value.
+- **Accessibility Label Text and Label Text Matching**: The `Accessibility Label Text` of an input field must match the `Label Text` value. For some input fields that do not use labels (checkboxes, buttons) the `Accessibility Label Text` must match the `Text` value.
   - Preconditions:
     - `Name` must have a non-default value.
     - `Name` must be on title case.
@@ -57,3 +58,40 @@ Description of configurations/standards. The table above has priority over the p
 
 - Reports if a field is in more than 1 group.
 - Reports if a group does not include an admin override condition.
+  <br/><br/>
+
+## 🚀 Getting Started
+
+To get started with the VisualVault XML Fixer, follow these steps:
+
+### 1. Clone the Repository
+
+Clone the repository to your local machine using the following command:
+
+```
+git clone https://github.com/visualvault/xml-fixer.git
+```
+
+### 2. Install Required Modules
+
+Navigate to the project directory and install the required modules by running the following command:
+
+```
+npm install
+```
+
+### 3. Create Folders
+
+Create the following folders inside the project directory:
+
+- `public`: This folder will contain any public assets or files that need to be served.
+- `public/input`: This folder will contain the XML files that need to be processed.
+- `public/output`: This folder will store the processed XML files and the markdown reports.
+
+You can create these folders manually or use the following commands:
+
+```
+mkdir public
+mkdir public/input
+mkdir public/output
+```

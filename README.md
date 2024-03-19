@@ -95,3 +95,10 @@ mkdir public
 mkdir public/input
 mkdir public/output
 ```
+
+## 🛠️ How To Use
+
+1. Export the form template xml file from the VisualVault environment.
+2. Place the xml file in the input path `/public/input`.
+3. Open your terminal or command prompt and navigate to the directory where your project is located.
+4. Once you are in the project directory, run the command `npm start`.

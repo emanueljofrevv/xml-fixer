@@ -389,8 +389,14 @@ function hasDefaultText(field) {
 }
 
 function isExceptionWord(word) {
-  const regex = new RegExp(`\\b${word}\\b`, "i");
-  return titleCaseExceptions.some((exc) => regex.test(exc));
+  let isException = false;
+  try {
+    const regex = new RegExp(`\\b${word}\\b`, "i");
+    isException = titleCaseExceptions.some((exc) => regex.test(exc));
+  } catch (error) {
+    console.log(error);
+  }
+  return isException;
 }
 
 function isLabelOverlaping(field, fields) {

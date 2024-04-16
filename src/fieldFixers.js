@@ -455,6 +455,22 @@ function isStrTitleCase(fieldName) {
   return isTitleCase;
 }
 
+function isValidIdentifier(name) {
+  // Updated to use \p{ID_Start} and \p{ID_Continue} properly
+  const regex = /^[\p{ID_Start}][\p{ID_Continue}\u200C\u200D]*$/u;
+  return regex.test(name);
+}
+
+function checkIdentifier(name) {
+  const nameNoSpaces = name.replace(/ /g, "_");
+  if (!isValidIdentifier(nameNoSpaces)) {
+    addToReport(
+      `#### ${name}`,
+      `The field name \`${name}\` has an invalid JS identifier character.`,
+    );
+  }
+}
+
 function checkTitleCase(fieldName) {
   // Split the string into an array of words
   const words = fieldName.split(" ");
@@ -852,6 +868,9 @@ function fixFields(form) {
       // Iterate over each field in the page
       fields.forEach((field, fieldIndex) => {
         const fieldType = field.$["xsi:type"];
+        const fieldName = getFieldName(form, pageIndex, fieldIndex);
+
+        checkIdentifier(fieldName);
 
         const fieldActions = {
           CellField: (f, i, j) => cell(f, i, j),

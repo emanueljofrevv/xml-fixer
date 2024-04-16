@@ -143,7 +143,10 @@ function checkAccessibility(form, pIndex, fieldIndex) {
     }
   }
 
-  if (currentAccText && currentAccText !== newAccText) {
+  if (
+    currentAccText &&
+    currentAccText.toLowerCase() !== newAccText.toLowerCase()
+  ) {
     if (fix.accessibilityLabel && fieldNameCanBeUsed) {
       form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
         fieldIndex

@@ -424,6 +424,7 @@ function isLabelOverlaping(field, fields) {
 function isStrTitleCase(fieldName) {
   // Split the string into an array of words
   const words = fieldName.split(" ");
+  let isTitleCase = true;
 
   // Check each word to see if it follows the Title Case pattern
   words.forEach((word) => {
@@ -435,15 +436,14 @@ function isStrTitleCase(fieldName) {
         word.slice(1) === word.slice(1).toLowerCase();
 
       if (!isFirstLetterUppercase || !isRestOfWordLowercase) {
-        const includesException = isExceptionWord(word);
-
-        if (!includesException) {
-          return false;
+        if (!isExceptionWord(word)) {
+          isTitleCase = false;
         }
       }
     }
-    return true;
   });
+
+  return isTitleCase;
 }
 
 function checkTitleCase(fieldName) {

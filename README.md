@@ -18,6 +18,7 @@ This project is a utility tool designed to automate the process of fixing common
 | Accessibility Label and Label Text Matching | Report/Fix |   ✅    |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |               |  ✅   |   ✅   | ✅  |       ✅        |   ✅    |    ✅     |       ✅       |
 | Default Name                                | Report     |   ✅    |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |      ✅       |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |       ✅       |
 | Default Text                                | Report     |   ✅    |          |      |    ✅    |           |           |           |               |       |        |     |       ✅        |         |           |                |
+| Invalid JS Identifier Character             | Report     |   ✅    |    ✅    |  ✅  |    ✅    |    ✅     |    ✅     |    ✅     |      ✅       |  ✅   |   ✅   | ✅  |       ✅        |   ✅    |    ✅     |       ✅       |
 | Label Overlapping Field                     | Report     |         |          |      |          |           |           |           |               |       |   ✅   |     |                 |         |           |                |
 | Responsive Flow                             | Report/Fix |         |          |      |          |    ✅     |           |           |               |       |        |     |                 |         |           |                |
 | Right Border Proximity                      | Report     |   ✅    |    ✅    |  ✅  |    ✅    |           |           |    ✅     |      ✅       |  ✅   |        |     |       ✅        |   ✅    |    ✅     |       ✅       |
@@ -25,6 +26,7 @@ This project is a utility tool designed to automate the process of fixing common
 | Spelling                                    | Report     |         |    ✅    |  ✅  |    ✅    |           |           |    ✅     |      ✅       |       |        |     |                 |   ✅    |    ✅     |                |
 | Tab Order                                   | Report/Fix |   ✅    |    ✅    |  ✅  |    ✅    |           |           |    ✅     |               |       |        |     |       ✅        |   ✅    |    ✅     |       ✅       |
 | Title Case Name                             | Report/Fix |         |    ✅    |  ✅  |    ✅    |           |    ✅     |    ✅     |      ✅       |  ✅   |        | ✅  |       ✅        |   ✅    |    ✅     |                |
+
 
 #### Notes:
 
@@ -42,6 +44,7 @@ Description of configurations/standards. The table above has priority over the p
     - `Name` must have no spelling errors.
 - **Default Name**: Fields that should not have the default `Name` value in the `Control Properties` configurations.
 - **Default Text**: Fields that should not have the default `Text` value in the `Appearance` configurations.
+- **Invalid JS Identifier Character**: Set a field `Name` as invalid if contains an invalid JavaScript character. Ignores blank spaces.
 - **Label Overlapping Field**: Alerts if a label is overlapping a field by more than 5px.
 - **Responsive Flow**: Containers with more than 1 field in them should have the `Responsive Flow` value in the `Appearance` configurations set to `1 Column` or `2 Columns`.
 - **Right Border Proximity**: Fields that should not be closer than 30px from the form right margin.

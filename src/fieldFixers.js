@@ -88,7 +88,7 @@ function createAccTextWithLabel(form, pIndex, fieldIndex, fieldName) {
   newAccText = cleanedLabelText.trim();
 
   if (isRequired) {
-    newAccText += " Required Field";
+    newAccText += " field Required";
   }
 
   return newAccText;

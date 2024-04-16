@@ -547,9 +547,6 @@ function button(form, pIndex, fieldIndex) {
   form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
-    if (!checkTitleCase(fieldName)) {
-      form = fixTitleCase(form, pIndex, fieldIndex);
-    }
     form = checkAccessibility(form, pIndex, fieldIndex);
   }
 

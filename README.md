@@ -105,3 +105,55 @@ mkdir public/output
 2. Place the xml file in the input path `/public/input`.
 3. Open your terminal or command prompt and navigate to the directory where your project is located.
 4. Once you are in the project directory, run the command `npm start`.
+
+## 🚀🐳 Getting Started with Docker Setup and Usage
+
+If you prefer to use Docker for running the `xml-fixer` application, follow these steps for a smooth setup and execution process. This guide assumes you have Docker and Docker Compose installed on your machine. If not, please install them from the [official Docker website](https://www.docker.com/get-started) before proceeding.
+
+### Initial Setup
+
+1. **Clone the repository:** If you haven't already, clone the `xml-fixer` repository to your local machine.
+
+    ```bash
+    git clone <repository-url>
+    ```
+
+2. **Navigate to the project directory:** Change your current directory to the `xml-fixer` project directory.
+
+    ```bash
+    cd xml-fixer
+    ```
+
+3. **Build and run the Docker environment:** Use the following Docker Compose command to build the Docker image and start the container in detached mode. The `--build` flag ensures that Docker builds the image before starting the containers, while `-d` runs them in the background (detached mode).
+
+    ```bash
+    docker-compose up -d --build
+    ```
+
+    This command does a few things:
+    - **Builds a Docker image** for the `xml-fixer` application based on the instructions in the `Dockerfile`. This includes setting up the required environment, dependencies, and application files.
+    - **Starts the containers** specified in your `docker-compose.yml` file. In this case, it runs the `xml-fixer` application container.
+    - **Runs the containers in detached mode** (`-d`), meaning they run in the background. You can use your terminal or command prompt for other commands while the container continues to run.
+
+### Running the Application
+
+After setting up Docker as described above, you're ready to use the `xml-fixer` application with Docker.
+
+1. **Export the form template XML file** from the VisualVault environment.
+
+2. **Place the XML file** in the project's `/public/input` directory. If you're using Docker, you might need to place the file in the corresponding directory on your host machine that's mapped to the Docker container.
+
+3. **Execute the container:** If the container is already running in detached mode, the application inside the container is ready to use. Otherwise, you can start the container with:
+
+    ```bash
+    docker-compose up -d
+    ```
+
+4. **Accessing the application:** Depending on how `xml-fixer` is configured, you might interact with it through command line commands, APIs, or web interfaces. Refer to specific `xml-fixer` usage instructions for details on how to use the application.
+
+### Stopping the Application
+
+To stop the running Docker container(s), use the following command:
+
+```bash
+docker-compose down

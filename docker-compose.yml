@@ -1,0 +1,14 @@
+services:
+  xml-fixer:
+    build: .
+    container_name: xml-fixer
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./public:/usr/src/app/public
+    networks:
+      - xml-fixer-network
+networks:
+  xml-fixer-network:
+    name: xml-fixer-network
+    driver: bridge

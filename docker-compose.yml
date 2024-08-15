@@ -1,13 +1,26 @@
+version: '3.8'
+
 services:
-  xml-fixer:
-    build: .
-    container_name: xml-fixer
+  xml-fixer-backend:
+    build: ./xml-fixer-backend
+    container_name: xml-fixer-backend
     ports:
       - "3000:3000"
     volumes:
-      - ./public:/usr/src/app/public
+      - ./xml-fixer-backend/public:/usr/src/app/public
     networks:
       - xml-fixer-network
+
+  xml-fixer-frontend:
+    build: ./xml-fixer-frontend
+    container_name: xml-fixer-frontend
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./xml-fixer-frontend:/usr/src/app
+    networks:
+      - xml-fixer-network
+
 networks:
   xml-fixer-network:
     name: xml-fixer-network

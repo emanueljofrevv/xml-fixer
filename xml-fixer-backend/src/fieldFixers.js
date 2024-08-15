@@ -89,7 +89,7 @@ function createAccTextWithLabel(form, pIndex, fieldIndex, fieldName) {
   newAccText = cleanedLabelText.trim();
 
   if (isRequired) {
-    newAccText += " Required Field";
+    newAccText += " field Required";
   }
 
   return newAccText;
@@ -144,7 +144,10 @@ function checkAccessibility(form, pIndex, fieldIndex) {
     }
   }
 
-  if (currentAccText && currentAccText !== newAccText) {
+  if (
+    currentAccText &&
+    currentAccText.toLowerCase() !== newAccText.toLowerCase()
+  ) {
     if (fix.accessibilityLabel && fieldNameCanBeUsed) {
       form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
         fieldIndex
@@ -387,8 +390,14 @@ function hasDefaultText(field) {
 }
 
 function isExceptionWord(word) {
-  const regex = new RegExp(`\\b${word}\\b`, "i");
-  return titleCaseExceptions.some((exc) => regex.test(exc));
+  let isException = false;
+  try {
+    const regex = new RegExp(`\\b${word}\\b`, "i");
+    isException = titleCaseExceptions.some((exc) => regex.test(exc));
+  } catch (error) {
+    console.log(error);
+  }
+  return isException;
 }
 
 function isLabelOverlaping(field, fields) {
@@ -425,6 +434,7 @@ function isLabelOverlaping(field, fields) {
 function isStrTitleCase(fieldName) {
   // Split the string into an array of words
   const words = fieldName.split(" ");
+  let isTitleCase = true;
 
   // Check each word to see if it follows the Title Case pattern
   words.forEach((word) => {
@@ -436,15 +446,30 @@ function isStrTitleCase(fieldName) {
         word.slice(1) === word.slice(1).toLowerCase();
 
       if (!isFirstLetterUppercase || !isRestOfWordLowercase) {
-        const includesException = isExceptionWord(word);
-
-        if (!includesException) {
-          return false;
+        if (!isExceptionWord(word)) {
+          isTitleCase = false;
         }
       }
     }
-    return true;
   });
+
+  return isTitleCase;
+}
+
+function isValidIdentifier(name) {
+  // Updated to use \p{ID_Start} and \p{ID_Continue} properly
+  const regex = /^[\p{ID_Start}][\p{ID_Continue}\u200C\u200D]*$/u;
+  return regex.test(name);
+}
+
+function checkIdentifier(name) {
+  const nameNoSpaces = name.replace(/ /g, "_");
+  if (!isValidIdentifier(nameNoSpaces)) {
+    addToReport(
+      `#### ${name}`,
+      `The field name \`${name}\` has an invalid JS identifier character.`,
+    );
+  }
 }
 
 function checkTitleCase(fieldName) {
@@ -548,9 +573,6 @@ function button(form, pIndex, fieldIndex) {
   form = checkTabOrder(form, field, pIndex, fieldIndex);
 
   if (!hasDefaultName(fieldName)) {
-    if (!checkTitleCase(fieldName)) {
-      form = fixTitleCase(form, pIndex, fieldIndex);
-    }
     form = checkAccessibility(form, pIndex, fieldIndex);
   }
 
@@ -847,6 +869,9 @@ function fixFields(form) {
       // Iterate over each field in the page
       fields.forEach((field, fieldIndex) => {
         const fieldType = field.$["xsi:type"];
+        const fieldName = getFieldName(form, pageIndex, fieldIndex);
+
+        checkIdentifier(fieldName);
 
         const fieldActions = {
           CellField: (f, i, j) => cell(f, i, j),

@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-use-before-define */
 /* eslint-disable no-param-reassign */
+
 const nspell = require("nspell");
 const fs = require("fs");
 const { addToReport } = require("./report");

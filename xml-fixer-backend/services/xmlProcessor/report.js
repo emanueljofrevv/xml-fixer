@@ -14,48 +14,48 @@ const report = new Map();
 /* -------------------------------------------------------------------------- */
 
 function addToReport(key, value) {
-  if (!report.has(key)) {
-    report.set(key, [value]);
-  } else {
-    const reportedField = report.get(key);
-    reportedField.push(value);
-  }
+    if (!report.has(key)) {
+        report.set(key, [value]);
+    } else {
+        const reportedField = report.get(key);
+        reportedField.push(value);
+    }
 }
 
 function clearReport() {
-  report.clear();
+    report.clear();
 }
 
 function generateReport(data, fileName) {
-  let markdown = ``;
-  let fieldsCount = 0;
-  let issuesCount = 0;
+    let markdown = ``;
+    let fieldsCount = 0;
+    let issuesCount = 0;
 
-  data.forEach((value, key) => {
-    fieldsCount += 1;
-    // Add the subheader
-    markdown += `${key}\n`;
-    value.forEach((msg, i) => {
-      issuesCount += 1;
-      if (msg) {
-        // Add the message
-        markdown += `${i + 1}. ${msg}\n`;
-      }
+    data.forEach((value, key) => {
+        fieldsCount += 1;
+        // Add the subheader
+        markdown += `${key}\n`;
+        value.forEach((msg, i) => {
+            issuesCount += 1;
+            if (msg) {
+                // Add the message
+                markdown += `${i + 1}. ${msg}\n`;
+            }
+        });
     });
-  });
 
-  // append to the beginning of the report the header
-  markdown = `# ${fileName}
-  > ### **Report Stats**
-  > - **Total Fields With Issues**: ${fieldsCount}
-  > - **Total Issues Found**: ${issuesCount}\n\n${markdown}`;
+    // append to the beginning of the report the header
+    markdown = `# ${fileName}
+    > ### **Report Stats**
+    > - **Total Fields With Issues**: ${fieldsCount}
+    > - **Total Issues Found**: ${issuesCount}\n\n${markdown}`;
 
-  return markdown;
+    return markdown;
 }
 
 module.exports = {
-  addToReport,
-  report,
-  clearReport,
-  generateReport,
+    addToReport,
+    report,
+    clearReport,
+    generateReport,
 };

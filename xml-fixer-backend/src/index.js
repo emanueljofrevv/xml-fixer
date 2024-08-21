@@ -8,14 +8,14 @@ const formidable = require('formidable');
 const fs = require('fs');
 const path = require('path');
 const xml2js = require('xml2js');
-const fixFields = require('./fieldFixers');
-const fixGroupsAndConditions = require('./groupFixers');
+const fixFields = require('../services/xmlProcessor/fieldFixers');
+const fixGroupsAndConditions = require('../services/xmlProcessor/groupFixers');
 const {
   addToReport,
   report,
   clearReport,
   generateReport,
-} = require('./report');
+} = require('../services/xmlProcessor/report');
 
 /* -------------------------------------------------------------------------- */
 /*                              CONFIG VARIABLES                              */

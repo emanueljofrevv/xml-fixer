@@ -13,7 +13,7 @@ export function FileUpload(onFileUploaded) {
     if (file) {
       const result = await uploadFile(file);
 
-      console.log("Archivo subido:", result);
+      console.log("Uploted file:", result);
       onFileUploaded(result);
     }
   });

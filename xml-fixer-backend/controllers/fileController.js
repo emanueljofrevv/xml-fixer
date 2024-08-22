@@ -12,6 +12,20 @@ const uploadDir = process.env.UPLOAD_DIR;
 const outputDir = process.env.OUTPUT_XML_PATH;
 const fsPromises = fs.promises; // Use fs.promises for better handling
 
+function encodeFilename(input) {
+    return Buffer.from(input)
+        .toString('base64')
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=+$/, ''); // Remove any trailing '=' padding
+}
+
+function decodeFilename(encoded) {
+    // Add back missing padding before decoding
+    encoded = encoded.padEnd(encoded.length + ((4 - (encoded.length % 4)) % 4), '=');
+    return Buffer.from(encoded.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf-8');
+}
+
 // TODO: properly handle errors in this controller
 module.exports = {
     uploadFile: (req, res) => {
@@ -30,7 +44,10 @@ module.exports = {
 
                 const file = files.xmlFile[0];
                 const filePath = file.filepath;
-                const newFilePath = path.join(uploadDir, file.newFilename);
+                const encodedFileName = encodeFilename(
+                    `${file.newFilename}:${file.originalFilename.replace('.xml', '')}`
+                );
+                const newFilePath = path.join(uploadDir, encodedFileName);
 
                 fs.rename(filePath, newFilePath, async (renameError) => {
                     if (renameError) {
@@ -66,9 +83,13 @@ module.exports = {
                                     return;
                                 }
 
+                                const [uniqueHash, originalFileName] =
+                                    decodeFilename(fileName).split(':');
+
                                 if (stat.isFile()) {
                                     resolve({
-                                        fileName,
+                                        id: fileName,
+                                        originalFileName,
                                         createDate: stat.ctime,
                                     });
                                 } else {

@@ -1,12 +1,16 @@
+import { parseMarkdown } from "../../helpers/parse-markdown.js";
+
 export const FileModal = (fileDetails, onClose) => {
   const container = document.createElement("div");
   container.className = "file-modal";
+
+  const markdownHtml = parseMarkdown(fileDetails);
 
   const modalContent = document.createElement("div");
   modalContent.className = "modal-content";
   modalContent.innerHTML = `
         <h2>File Details</h2>
-        <pre>${JSON.stringify(fileDetails, null, 2)}</pre>
+        <div>${markdownHtml}</div>
         <button class="close-btn">Close</button>
     `;
 

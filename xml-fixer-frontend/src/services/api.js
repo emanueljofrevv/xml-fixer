@@ -1,34 +1,38 @@
 import { API_BASE_URL } from "./../config/config.js";
 
 export const uploadFile = async (file) => {
-  const formData = new FormData();
-  formData.append("file", file);
+  try {
+    const formData = new FormData();
+    formData.append("xmlFile", file);
 
-  const response = await fetch(`${API_BASE_URL}/upload`, {
-    method: "POST",
-    body: formData,
-  });
+    const response = await fetch(`${API_BASE_URL}/upload`, {
+      method: "POST",
+      body: formData,
+    });
 
-  return response.json();
+    return response.json();
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    throw error;
+  }
 };
 
 export const getFiles = async () => {
-  //const response = await fetch(`${API_BASE_URL}/files`);
-  const response = [
-    { name: "File 1", id: 1 },
-    { name: "File 2", id: 2 },
-    { name: "File 3", id: 3 },
-  ];
-  return response;
+  try {
+    const response = await fetch(`${API_BASE_URL}/files`);
+    return response.json();
+  } catch (error) {
+    console.error("Error retrieving files:", error);
+    throw error;
+  }
 };
 
 export const getFileDetails = async (fileId) => {
-  //const response = await fetch(`${API_BASE_URL}/files/${fileId}`);
-  const files = [
-    { name: "File 1", id: 1 },
-    { name: "File 2", id: 2 },
-    { name: "File 3", id: 3 },
-  ];
-  const response = files.find((file) => file.id === fileId);
-  return response;
+  try {
+    const response = await fetch(`${API_BASE_URL}/file/${fileId}`);
+    return response.json();
+  } catch (error) {
+    console.error("Error retrieving file details:", error);
+    throw error;
+  }
 };

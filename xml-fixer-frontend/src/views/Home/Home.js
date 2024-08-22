@@ -11,20 +11,37 @@ export const Home = () => {
   const header = Header();
 
   const renderFileList = () => {
-    const fileList = FileList(window.filesData, async (fileId) => {
-      const fileDetails = await getFileDetails(fileId);
-      showModal(fileDetails.markdown);
-    });
+    const fileList = FileList(
+      window.filesData,
+      async (fileId) => {
+        // Details action
+        const fileDetails = await getFileDetails(fileId);
+        showModal(fileDetails.markdown);
+      },
+      (fileId) => {
+        // Delete action
+        window.filesData = window.filesData.filter(
+          (file) => file.id !== fileId
+        );
+        renderFileList();
+      }
+    );
 
     container.innerHTML = "";
     container.appendChild(fileUpload);
     container.appendChild(fileList);
   };
 
-  const fileUpload = FileUpload(async (uploadedFile) => {
-    window.filesData.push(uploadedFile);
-    renderFileList();
-  });
+  const fileUpload = FileUpload(
+    async (uploadedFile) => {
+      window.filesData.push(uploadedFile);
+      renderFileList();
+    },
+    async () => {
+      window.filesData = [];
+      renderFileList();
+    }
+  );
 
   const showModal = (fileDetails) => {
     const modal = FileModal(fileDetails, () => container.removeChild(modal));

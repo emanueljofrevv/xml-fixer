@@ -4,29 +4,13 @@
 /* eslint-disable no-param-reassign */
 
 const formidable = require('formidable');
-const fs = require('fs');
 const path = require('path');
 const xmlProcessor = require('../services/xmlProcessor');
+const fileHelper = require('../helpers/fileHelper');
 
 const uploadDir = process.env.UPLOAD_DIR;
 const outputDir = process.env.OUTPUT_XML_PATH;
-const fsPromises = fs.promises; // Use fs.promises for better handling
 
-function encodeFilename(input) {
-    return Buffer.from(input)
-        .toString('base64')
-        .replace(/\+/g, '-')
-        .replace(/\//g, '_')
-        .replace(/=+$/, ''); // Remove any trailing '=' padding
-}
-
-function decodeFilename(encoded) {
-    // Add back missing padding before decoding
-    encoded = encoded.padEnd(encoded.length + ((4 - (encoded.length % 4)) % 4), '=');
-    return Buffer.from(encoded.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf-8');
-}
-
-// TODO: properly handle errors in this controller
 module.exports = {
     uploadFile: (req, res) => {
         try {
@@ -34,82 +18,57 @@ module.exports = {
             form.uploadDir = uploadDir;
             form.keepExtensions = true;
 
-            form.parse(req, (error, fields, files) => {
+            form.parse(req, async (error, fields, files) => {
                 if (error) {
-                    res.status(500).send('Error in file upload');
-                    return;
+                    return res.status(500).send('Error in file upload');
                 }
-
-                console.log(files);
 
                 const file = files.xmlFile[0];
                 const filePath = file.filepath;
-                const encodedFileName = encodeFilename(
+                const encodedFileName = fileHelper.encodeFilename(
                     `${file.newFilename}:${file.originalFilename.replace('.xml', '')}`
                 );
                 const newFilePath = path.join(uploadDir, encodedFileName);
 
-                fs.rename(filePath, newFilePath, async (renameError) => {
-                    if (renameError) {
-                        res.status(500).send('Error in moving file');
-                        return;
-                    }
-
+                try {
+                    await fileHelper.renameFile(filePath, newFilePath);
                     await xmlProcessor.processXmlFile(newFilePath);
-
-                    res.status(200).send('File uploaded and processed successfully');
-                });
+                    return res.status(200).send('File uploaded and processed successfully');
+                } catch (renameError) {
+                    return res.status(500).send('Error in moving or processing file');
+                }
             });
         } catch (error) {
-            res.status(500).send(error);
+            console.error('Server Error:', error);
+            return res.status(500).send('Internal server error');
         }
     },
-    getAllFiles: (req, res) => {
+
+    getAllFiles: async (req, res) => {
         try {
-            fs.readdir(uploadDir, (readdirError, fileNames) => {
-                if (readdirError) {
-                    res.status(500).send('Error reading input folder');
-                    return;
+            const fileNames = await fileHelper.readDirectory(uploadDir);
+
+            const filePromises = fileNames.map(async (fileName) => {
+                const filepath = path.resolve(uploadDir, fileName);
+                const stat = await fileHelper.getFileStats(filepath);
+                const [uniqueHash, originalFileName] = fileHelper.decodeFilename(fileName).split(':');
+
+                if (stat.isFile()) {
+                    return {
+                        id: fileName,
+                        originalFileName,
+                        createDate: stat.ctime,
+                    };
                 }
 
-                const filePromises = fileNames.map(
-                    (fileName) =>
-                        new Promise((resolve, reject) => {
-                            const filepath = path.resolve(uploadDir, fileName);
-                            fs.stat(filepath, (error, stat) => {
-                                if (error) {
-                                    // eslint-disable-next-line prefer-promise-reject-errors
-                                    reject('Error getting information about the file');
-                                    return;
-                                }
-
-                                const [uniqueHash, originalFileName] =
-                                    decodeFilename(fileName).split(':');
-
-                                if (stat.isFile()) {
-                                    resolve({
-                                        id: fileName,
-                                        originalFileName,
-                                        createDate: stat.ctime,
-                                    });
-                                } else {
-                                    resolve(null); // skip folders
-                                }
-                            });
-                        })
-                );
-
-                Promise.all(filePromises)
-                    .then((results) => {
-                        const files = results.filter((file) => file !== null); // filter out null values
-                        res.status(200).json(files);
-                    })
-                    .catch((filePromisesError) => {
-                        throw filePromisesError;
-                    });
+                return null;
             });
+
+            const files = (await Promise.all(filePromises)).filter((file) => file !== null);
+            return res.status(200).json(files);
         } catch (error) {
-            res.status(500).send(error);
+            console.error('Error reading files:', error);
+            return res.status(500).send('Error reading input folder');
         }
     },
 
@@ -118,15 +77,15 @@ module.exports = {
             const { fileName } = req.params;
             const filepath = path.resolve(outputDir, `${fileName}.md`);
 
-            const fileExists = await fsPromises.stat(filepath).catch(() => null);
-            if (!fileExists) {
+            const exists = await fileHelper.fileExists(filepath);
+            if (!exists) {
                 return res.status(404).send('File not found');
             }
 
-            const data = await fsPromises.readFile(filepath, 'utf8');
+            const data = await fileHelper.readFile(filepath);
             return res.status(200).send(data);
         } catch (error) {
-            console.error('Error reading file:', error);
+            console.error('Error retrieving file:', error);
             return res.status(500).send('Error retrieving file');
         }
     },

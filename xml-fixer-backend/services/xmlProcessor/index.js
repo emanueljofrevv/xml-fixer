@@ -1,42 +1,14 @@
 /* eslint-disable prettier/prettier */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-use-before-define */
-/* eslint-disable no-param-reassign */
 
-const fs = require('fs');
 const path = require('path');
 const xml2js = require('xml2js');
 const fixFields = require('./fieldFixers');
 const fixGroupsAndConditions = require('./groupFixers');
-const { addToReport, report, clearReport, generateReport } = require('./report');
+const { report, clearReport, generateReport } = require('./report');
+const fileHelper = require('../../helpers/fileHelper');
 
 const outputXmlPath = process.env.OUTPUT_XML_PATH;
 const outputReportPath = process.env.OUTPUT_REPORT_PATH;
-
-function readXmlFile(inputXmlPath) {
-    return new Promise((resolve, reject) => {
-        fs.readFile(inputXmlPath, 'utf-8', (err, data) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            resolve(data);
-        });
-    });
-}
-
-function writeFile(path, content) {
-    return new Promise((resolve, reject) => {
-        fs.writeFile(path, content, (err) => {
-            if (err) {
-                reject(err);
-                return;
-            }
-            console.log('The file has been saved!');
-            resolve();
-        });
-    });
-}
 
 function convertXmlToJson(data) {
     return new Promise((resolve, reject) => {
@@ -52,31 +24,36 @@ function convertXmlToJson(data) {
 
 function convertJsonToXml(json) {
     const builder = new xml2js.Builder();
-    const xml = builder.buildObject(json);
-    return xml;
+    return builder.buildObject(json);
 }
 
 module.exports = {
     processXmlFile: async (filePath) => {
         try {
-            const data = await readXmlFile(filePath);
+            const data = await fileHelper.readFile(filePath, 'utf8');
             const fileName = path.basename(filePath, '.xml');
+
             const jsonData = await convertXmlToJson(data);
             const formEntity = jsonData.FormEntity;
 
-            // Analyze the XML and fix the fields
+            // Analyze and fix fields and groups
             jsonData.FormEntity = fixFields(formEntity);
             fixGroupsAndConditions(formEntity);
 
-            // Convert the JSON back to XML
             const xml = convertJsonToXml(jsonData);
 
-            // Create files
+            // Construct paths for output XML and report files
             const xmlOutputPath = path.join(outputXmlPath, `${fileName}.xml`);
             const reportPath = path.join(outputReportPath, `${fileName}.md`);
+
+            // Generate report data
             const reportData = await generateReport(report, fileName);
-            await writeFile(reportPath, reportData);
-            await writeFile(xmlOutputPath, xml);
+
+            // Write report and XML files using fileHelper
+            await fileHelper.writeFile(reportPath, reportData);
+            await fileHelper.writeFile(xmlOutputPath, xml);
+
+            // Clear report after successful processing
             clearReport();
 
             console.log(`File processed: ${fileName}`);

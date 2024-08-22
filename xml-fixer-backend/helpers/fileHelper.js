@@ -1,14 +1,18 @@
 /* eslint-disable prettier/prettier */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-use-before-define */
-/* eslint-disable no-param-reassign */
 
 const fs = require('fs');
-const path = require('path');
 
 const fsPromises = fs.promises;
 
-// Function to rename (move) a file
+async function writeFile(filePath, content) {
+    try {
+        await fsPromises.writeFile(filePath, content, 'utf8');
+        console.log(`File written successfully to ${filePath}`);
+    } catch (error) {
+        throw new Error(`Error writing file: ${error.message}`);
+    }
+}
+
 async function renameFile(oldPath, newPath) {
     try {
         await fsPromises.rename(oldPath, newPath);
@@ -17,7 +21,6 @@ async function renameFile(oldPath, newPath) {
     }
 }
 
-// Function to read the directory and get file names
 async function readDirectory(directory) {
     try {
         return await fsPromises.readdir(directory);
@@ -26,7 +29,6 @@ async function readDirectory(directory) {
     }
 }
 
-// Function to get file stats
 async function getFileStats(filepath) {
     try {
         return await fsPromises.stat(filepath);
@@ -35,7 +37,6 @@ async function getFileStats(filepath) {
     }
 }
 
-// Function to read a file's contents
 async function readFile(filepath, encoding = 'utf8') {
     try {
         return await fsPromises.readFile(filepath, encoding);
@@ -44,7 +45,6 @@ async function readFile(filepath, encoding = 'utf8') {
     }
 }
 
-// Function to check if a file exists
 async function fileExists(filepath) {
     try {
         await fsPromises.access(filepath, fs.constants.F_OK);
@@ -54,7 +54,14 @@ async function fileExists(filepath) {
     }
 }
 
-// Function to encode the filename
+async function deleteFile(filepath) {
+    try {
+        await fsPromises.unlink(filepath);
+    } catch (error) {
+        throw new Error(`Error deleting file: ${error.message}`);
+    }
+}
+
 function encodeFilename(input) {
     return Buffer.from(input)
         .toString('base64')
@@ -63,19 +70,21 @@ function encodeFilename(input) {
         .replace(/=+$/, ''); // Remove any trailing '=' padding
 }
 
-// Function to decode the filename
 function decodeFilename(encoded) {
-    encoded = encoded.padEnd(encoded.length + ((4 - (encoded.length % 4)) % 4), '=');
-    return Buffer.from(encoded.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf-8');
+    // This calculates the remainder when the length of the string is divided by 4.
+    // In Base64, the string length must be a multiple of 4. If it's not, it needs padding.
+    const properBase64encoded = encoded.padEnd(encoded.length + ((4 - (encoded.length % 4)) % 4), '=');
+    return Buffer.from(properBase64encoded.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf-8');
 }
 
-// Exporting all the helper functions
 module.exports = {
+    writeFile,
     renameFile,
     readDirectory,
     getFileStats,
     readFile,
     fileExists,
+    deleteFile,
     encodeFilename,
     decodeFilename,
 };

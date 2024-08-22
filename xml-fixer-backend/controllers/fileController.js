@@ -25,15 +25,21 @@ module.exports = {
 
                 const file = files.xmlFile[0];
                 const filePath = file.filepath;
+                const noExtOriginalFilename = file.originalFilename.replace('.xml', '');
                 const encodedFileName = fileHelper.encodeFilename(
-                    `${file.newFilename}:${file.originalFilename.replace('.xml', '')}`
+                    `${file.newFilename}:${noExtOriginalFilename}`
                 );
                 const newFilePath = path.join(uploadDir, encodedFileName);
 
                 try {
                     await fileHelper.renameFile(filePath, newFilePath);
+                    const fileCreateDate = new Date().toISOString();
                     await xmlProcessor.processXmlFile(newFilePath);
-                    return res.status(200).send('File uploaded and processed successfully');
+                    return res.status(200).json({
+                        id: encodedFileName,
+                        originalFileName: noExtOriginalFilename,
+                        createDate: fileCreateDate
+                    });
                 } catch (renameError) {
                     return res.status(500).send('Error in moving or processing file');
                 }
@@ -51,7 +57,9 @@ module.exports = {
             const filePromises = fileNames.map(async (fileName) => {
                 const filepath = path.resolve(uploadDir, fileName);
                 const stat = await fileHelper.getFileStats(filepath);
-                const [uniqueHash, originalFileName] = fileHelper.decodeFilename(fileName).split(':');
+                const [uniqueHash, originalFileName] = fileHelper
+                    .decodeFilename(fileName)
+                    .split(':');
 
                 if (stat.isFile()) {
                     return {

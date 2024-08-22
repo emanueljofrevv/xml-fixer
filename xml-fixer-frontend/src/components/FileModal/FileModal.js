@@ -7,7 +7,7 @@ export const FileModal = (fileDetails, onClose) => {
   modalContent.innerHTML = `
         <h2>File Details</h2>
         <pre>${JSON.stringify(fileDetails, null, 2)}</pre>
-        <button class="close-btn">Cerrar</button>
+        <button class="close-btn">Close</button>
     `;
 
   modalContent.querySelector(".close-btn").addEventListener("click", onClose);

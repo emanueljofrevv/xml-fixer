@@ -13,11 +13,22 @@ export const uploadFile = async (file) => {
 };
 
 export const getFiles = async () => {
-  const response = await fetch(`${API_BASE_URL}/files`);
-  return response.json();
+  //const response = await fetch(`${API_BASE_URL}/files`);
+  const response = [
+    { name: "File 1", id: 1 },
+    { name: "File 2", id: 2 },
+    { name: "File 3", id: 3 },
+  ];
+  return response;
 };
 
 export const getFileDetails = async (fileId) => {
-  const response = await fetch(`${API_BASE_URL}/files/${fileId}`);
-  return response.json();
+  //const response = await fetch(`${API_BASE_URL}/files/${fileId}`);
+  const files = [
+    { name: "File 1", id: 1 },
+    { name: "File 2", id: 2 },
+    { name: "File 3", id: 3 },
+  ];
+  const response = files.find((file) => file.id === fileId);
+  return response;
 };

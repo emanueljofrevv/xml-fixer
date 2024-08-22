@@ -17,7 +17,7 @@ export const FileList = (files, onViewDetails) => {
                 <tr>
                     <td>${file.name}</td>
                     <td>
-                        <button class="view-btn" data-id="${file.id}">Ver</button>
+                        <button class="view-btn" data-id="${file.id}">Show</button>
                     </td>
                 </tr>
             `

@@ -92,7 +92,10 @@ module.exports = {
             }
 
             const data = await fileHelper.readFile(filePath);
-            return res.status(200).send(data);
+            return res.status(200).json({
+                fileName,
+                markdown: data,
+            });
         } catch (error) {
             console.error('Error retrieving file:', error);
             return res.status(500).send('Error retrieving file');

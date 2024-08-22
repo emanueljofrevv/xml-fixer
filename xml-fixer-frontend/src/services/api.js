@@ -36,3 +36,37 @@ export const getFileDetails = async (fileId) => {
     throw error;
   }
 };
+
+export const deleteFile = async (fileId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/file/${fileId}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to delete the file");
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    throw error;
+  }
+};
+
+export const deleteAllFiles = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/files`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to delete the files");
+    }
+
+    return response;
+  } catch (error) {
+    console.error("Error deleting files:", error);
+    throw error;
+  }
+};

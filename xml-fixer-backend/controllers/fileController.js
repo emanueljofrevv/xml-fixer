@@ -58,8 +58,8 @@ module.exports = {
             const fileNames = await fileHelper.readDirectory(uploadDir);
 
             const filePromises = fileNames.map(async (fileName) => {
-                const filepath = path.resolve(uploadDir, fileName);
-                const stat = await fileHelper.getFileStats(filepath);
+                const filePath = path.resolve(uploadDir, fileName);
+                const stat = await fileHelper.getFileStats(filePath);
                 const [, originalFileName] = fileHelper.decodeFilename(fileName).split(':');
 
                 if (stat.isFile()) {
@@ -84,18 +84,41 @@ module.exports = {
     getFile: async (req, res) => {
         try {
             const { fileName } = req.params;
-            const filepath = path.resolve(outputDir, `${fileName}.md`);
+            const filePath = path.resolve(outputDir, `${fileName}.md`);
 
-            const exists = await fileHelper.fileExists(filepath);
+            const exists = await fileHelper.fileExists(filePath);
             if (!exists) {
                 return res.status(404).send('File not found');
             }
 
-            const data = await fileHelper.readFile(filepath);
+            const data = await fileHelper.readFile(filePath);
             return res.status(200).send(data);
         } catch (error) {
             console.error('Error retrieving file:', error);
             return res.status(500).send('Error retrieving file');
+        }
+    },
+
+    downloadFile: async (req, res) => {
+        try {
+            const { fileName } = req.params;
+            const filePath = path.resolve(outputDir, `${fileName}.xml`);
+
+            const exists = await fileHelper.fileExists(filePath);
+            if (!exists) {
+                return res.status(404).send('File not found');
+            }
+
+            // Download the XML file
+            return res.download(filePath, fileName, (err) => {
+                if (err) {
+                    console.error('Error downloading XML file:', err);
+                    return res.status(500).send('Error downloading file');
+                }
+            });
+        } catch (error) {
+            console.error('Error in downloadFile:', error);
+            return res.status(500).send('Internal server error');
         }
     },
 
@@ -134,15 +157,14 @@ module.exports = {
         }
     },
 
-
     deleteAllFiles: async (req, res) => {
         try {
             // Read and delete all files from uploadDir
             const inputFiles = await fileHelper.readDirectory(uploadDir);
             await Promise.all(
                 inputFiles.map(async (file) => {
-                    const filepath = path.resolve(uploadDir, file);
-                    await fileHelper.deleteFile(filepath);
+                    const filePath = path.resolve(uploadDir, file);
+                    await fileHelper.deleteFile(filePath);
                 })
             );
 
@@ -150,8 +172,8 @@ module.exports = {
             const outputFiles = await fileHelper.readDirectory(outputDir);
             await Promise.all(
                 outputFiles.map(async (file) => {
-                    const filepath = path.resolve(outputDir, file);
-                    await fileHelper.deleteFile(filepath);
+                    const filePath = path.resolve(outputDir, file);
+                    await fileHelper.deleteFile(filePath);
                 })
             );
 

@@ -1,4 +1,6 @@
-export const FileList = (files, onViewDetails) => {
+import { deleteFile } from "../../services/api.js";
+
+export const FileList = (files, onViewDetails, onDeleteFile) => {
   const container = document.createElement("div");
   container.className = "file-list";
 
@@ -15,9 +17,14 @@ export const FileList = (files, onViewDetails) => {
               .map(
                 (file) => `
                 <tr>
-                    <td>${file.originalFileName}</td>
+                    <td>${file.originalFileName || file.id}</td>
                     <td>
-                        <button class="view-btn" data-id="${file.id}">Show</button>
+                        <button class="view-btn" data-id="${
+                          file.id
+                        }">Show</button>
+                        <button class="delete-btn" data-id="${
+                          file.id
+                        }">Delete</button>
                     </td>
                 </tr>
             `
@@ -26,10 +33,20 @@ export const FileList = (files, onViewDetails) => {
         </tbody>
     `;
 
-  table.addEventListener("click", (e) => {
+  table.addEventListener("click", async (e) => {
+    const fileId = e.target.getAttribute("data-id");
+
     if (e.target.classList.contains("view-btn")) {
-      const fileId = e.target.getAttribute("data-id");
       onViewDetails(fileId);
+    }
+
+    if (e.target.classList.contains("delete-btn")) {
+      try {
+        await deleteFile(fileId);
+        onDeleteFile(fileId);
+      } catch (error) {
+        console.error("Error deleting file:", error);
+      }
     }
   });
 

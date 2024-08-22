@@ -15,7 +15,7 @@ export const FileList = (files, onViewDetails) => {
               .map(
                 (file) => `
                 <tr>
-                    <td>${file.name}</td>
+                    <td>${file.originalFileName}</td>
                     <td>
                         <button class="view-btn" data-id="${file.id}">Show</button>
                     </td>

@@ -4,10 +4,17 @@ export function FileUpload(onFileUploaded, onFilesDeleted) {
   const container = document.createElement("div");
   container.className = "file-upload";
 
-  // Input to upload files
+  const uploadContainer = document.createElement("div");
+  uploadContainer.className = "upload-container";
+
+  const instructionText = document.createElement("p");
+  instructionText.className = "upload-instruction";
+  instructionText.textContent = "Upload your XML file";
+
   const input = document.createElement("input");
   input.type = "file";
   input.accept = ".xml";
+  input.className = "file-input";
   input.addEventListener("change", async () => {
     const file = input.files[0];
 
@@ -17,10 +24,14 @@ export function FileUpload(onFileUploaded, onFilesDeleted) {
     }
   });
 
-  // Button to delete files
+  const uploadButton = document.createElement("button");
+  uploadButton.className = "upload-btn";
+  uploadButton.textContent = "Select File";
+  uploadButton.addEventListener("click", () => input.click());
+
   const deleteButton = document.createElement("button");
   deleteButton.className = "delete-all-btn";
-  deleteButton.textContent = "Delete All Files";
+  deleteButton.textContent = "Delete all files";
   deleteButton.addEventListener("click", async () => {
     const response = await deleteAllFiles();
     if (response.ok) {
@@ -30,7 +41,11 @@ export function FileUpload(onFileUploaded, onFilesDeleted) {
     }
   });
 
-  container.appendChild(input);
+  uploadContainer.appendChild(instructionText);
+  uploadContainer.appendChild(uploadButton);
+  uploadContainer.appendChild(input);
+
+  container.appendChild(uploadContainer);
   container.appendChild(deleteButton);
 
   return container;

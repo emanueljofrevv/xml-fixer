@@ -1,4 +1,5 @@
 import { uploadFile, deleteAllFiles } from "./../../services/api.js";
+import { ConfirmationModal } from "./../ConfirmationModal/ConfirmationModal.js";
 
 export function FileUpload(onFileUploaded, onFilesDeleted) {
   const container = document.createElement("div");
@@ -32,13 +33,28 @@ export function FileUpload(onFileUploaded, onFilesDeleted) {
   const deleteButton = document.createElement("button");
   deleteButton.className = "delete-all-btn";
   deleteButton.textContent = "Delete all files";
-  deleteButton.addEventListener("click", async () => {
-    const response = await deleteAllFiles();
-    if (response.ok) {
-      onFilesDeleted();
-    } else {
-      console.error("Failed to delete files");
-    }
+
+  deleteButton.addEventListener("click", () => {
+    ConfirmationModal({
+      message: "Are you sure you want to delete all files?",
+      confirmLabel: "Yes, Delete All",
+      cancelLabel: "Cancel",
+      onConfirm: async () => {
+        try {
+          const response = await deleteAllFiles();
+          if (response.ok) {
+            onFilesDeleted();
+          } else {
+            console.error("Failed to delete files");
+          }
+        } catch (error) {
+          console.error("Error deleting files:", error);
+        }
+      },
+      onCancel: () => {
+        console.log("Delete action cancelled");
+      },
+    });
   });
 
   uploadContainer.appendChild(instructionText);

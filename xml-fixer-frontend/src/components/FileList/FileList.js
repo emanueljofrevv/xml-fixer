@@ -1,4 +1,5 @@
 import { deleteFile } from "../../services/api.js";
+import { ConfirmationModal } from "./../ConfirmationModal/ConfirmationModal.js";
 
 export const FileList = (files, onViewDetails, onDeleteFile) => {
   const container = document.createElement("div");
@@ -34,7 +35,7 @@ export const FileList = (files, onViewDetails, onDeleteFile) => {
         </tbody>
     `;
 
-  table.addEventListener("click", async (e) => {
+  table.addEventListener("click", (e) => {
     const fileId = e.target.getAttribute("data-id");
 
     if (e.target.classList.contains("view-btn")) {
@@ -42,12 +43,22 @@ export const FileList = (files, onViewDetails, onDeleteFile) => {
     }
 
     if (e.target.classList.contains("delete-btn")) {
-      try {
-        await deleteFile(fileId);
-        onDeleteFile(fileId);
-      } catch (error) {
-        console.error("Error deleting file:", error);
-      }
+      ConfirmationModal({
+        message: "Are you sure you want to delete this file?",
+        confirmLabel: "Yes, Delete",
+        cancelLabel: "Cancel",
+        onConfirm: async () => {
+          try {
+            await deleteFile(fileId);
+            onDeleteFile(fileId);
+          } catch (error) {
+            console.error("Error deleting file:", error);
+          }
+        },
+        onCancel: () => {
+          console.log("Delete action cancelled");
+        },
+      });
     }
   });
 

@@ -5,6 +5,7 @@ export const FileList = (files, onViewDetails, onDeleteFile) => {
   container.className = "file-list";
 
   const table = document.createElement("table");
+  table.className = "styled-table";
   table.innerHTML = `
         <thead>
             <tr>

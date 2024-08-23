@@ -7,8 +7,8 @@ const fixGroupsAndConditions = require('./groupFixers');
 const { report, clearReport, generateReport } = require('./report');
 const fileHelper = require('../../helpers/fileHelper');
 
-const outputXmlPath = path.join(__dirname, `..${process.env.OUTPUT_XML_PATH}`);
-const outputReportPath = path.join(__dirname, `..${process.env.OUTPUT_REPORT_PATH}`);
+const outputXmlPath = path.join(__dirname, `../..${process.env.OUTPUT_XML_PATH}`);
+const outputReportPath = path.join(__dirname, `../..${process.env.OUTPUT_REPORT_PATH}`);
 
 function convertXmlToJson(data) {
     return new Promise((resolve, reject) => {

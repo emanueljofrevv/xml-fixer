@@ -1,6 +1,7 @@
 .file-list {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  max-height: 600px;
   margin-top: 20px;
   overflow: hidden;
 }
@@ -10,6 +11,20 @@
   border-collapse: collapse;
   font-size: 16px;
   width: 100%;
+}
+
+.styled-table tbody {
+  display: block;
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.styled-table thead,
+.styled-table tbody tr {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
 }
 
 .styled-table thead tr {

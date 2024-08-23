@@ -8,10 +8,17 @@ export const FileModal = (fileDetails, onClose) => {
 
   const modalContent = document.createElement("div");
   modalContent.className = "modal-content";
+
   modalContent.innerHTML = `
-        <h2>File Details</h2>
-        <div>${markdownHtml}</div>
-        <button class="close-btn">Close</button>
+        <div class="modal-header">
+            <h2>File Details</h2>
+        </div>
+        <div class="modal-body">
+            <div class="modal-body-content">${markdownHtml}</div>
+        </div>
+        <div class="modal-footer">
+            <button class="close-btn">Close</button>
+        </div>
     `;
 
   modalContent.querySelector(".close-btn").addEventListener("click", onClose);

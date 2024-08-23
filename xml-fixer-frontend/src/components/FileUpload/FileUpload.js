@@ -1,5 +1,6 @@
 import { uploadFile, deleteAllFiles } from "./../../services/api.js";
 import { ConfirmationModal } from "./../ConfirmationModal/ConfirmationModal.js";
+import { LoaderModal } from "./../LoaderModal/LoaderModal.js";
 
 export function FileUpload(onFileUploaded, onFilesDeleted) {
   const container = document.createElement("div");
@@ -20,8 +21,15 @@ export function FileUpload(onFileUploaded, onFilesDeleted) {
     const file = input.files[0];
 
     if (file) {
-      const result = await uploadFile(file);
-      onFileUploaded(result);
+      const loader = LoaderModal();
+      container.appendChild(loader);
+
+      try {
+        const result = await uploadFile(file);
+        onFileUploaded(result);
+      } finally {
+        container.removeChild(loader);
+      }
     }
   });
 

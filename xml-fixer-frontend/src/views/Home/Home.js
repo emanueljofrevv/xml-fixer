@@ -34,7 +34,7 @@ export const Home = () => {
 
   const fileUpload = FileUpload(
     async (uploadedFile) => {
-      window.filesData.push(uploadedFile);
+      window.filesData.unshift(uploadedFile);
       renderFileList();
     },
     async () => {

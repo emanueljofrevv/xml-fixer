@@ -1,3 +1,4 @@
+import { formatDate } from "../../helpers/format-date.js";
 import { deleteFile } from "../../services/api.js";
 import { ConfirmationModal } from "./../ConfirmationModal/ConfirmationModal.js";
 
@@ -11,6 +12,7 @@ export const FileList = (files, onViewDetails, onDeleteFile) => {
         <thead>
             <tr>
                 <th>File</th>
+                <th>Date</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -19,7 +21,8 @@ export const FileList = (files, onViewDetails, onDeleteFile) => {
               .map(
                 (file) => `
                 <tr>
-                    <td>${file.originalFileName || file.id}</td>
+                    <td class="text">${file.originalFileName || file.id}</td>
+                    <td class="text">${formatDate(file.createDate)}</td>
                     <td>
                         <button class="view-btn" data-id="${
                           file.id

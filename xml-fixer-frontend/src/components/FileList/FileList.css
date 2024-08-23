@@ -23,8 +23,8 @@
 .styled-table thead,
 .styled-table tbody tr {
   display: table;
-  width: 100%;
   table-layout: fixed;
+  width: 100%;
 }
 
 .styled-table thead tr {
@@ -37,6 +37,13 @@
 .styled-table td {
   border-bottom: 1px solid #ddd;
   padding: 12px 15px;
+}
+
+.styled-table td.text {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .styled-table tbody tr:nth-child(even) {

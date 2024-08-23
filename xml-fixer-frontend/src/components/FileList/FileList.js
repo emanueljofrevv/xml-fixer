@@ -21,8 +21,8 @@ export const FileList = (files, onViewDetails, onDeleteFile) => {
               .map(
                 (file) => `
                 <tr>
-                    <td>${file.originalFileName || file.id}</td>
-                    <td>${formatDate(file.createDate)}</td>
+                    <td class="text">${file.originalFileName || file.id}</td>
+                    <td class="text">${formatDate(file.createDate)}</td>
                     <td>
                         <button class="view-btn" data-id="${
                           file.id

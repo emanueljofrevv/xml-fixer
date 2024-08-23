@@ -5,6 +5,7 @@
 
 const nspell = require('nspell');
 const fs = require('fs');
+const path = require('path');
 const { addToReport } = require('./report');
 const fieldsMapping = require('./xmlFieldsMapping');
 
@@ -505,8 +506,8 @@ function wordToUppercase(word) {
 /* -------------------------------------------------------------------------- */
 
 // Hunspell dictionary and affix files
-const affixPath = './services/xmlProcessor/hunspell/en_US.aff';
-const dictionaryPath = './services/xmlProcessor/hunspell/en_US.dic';
+const affixPath = path.join(__dirname, './hunspell/en_US.aff');
+const dictionaryPath = path.join(__dirname, './hunspell/en_US.dic');
 
 // Load dictionary and affix files (these paths are just examples)
 const dic = fs.readFileSync(dictionaryPath, 'utf-8');

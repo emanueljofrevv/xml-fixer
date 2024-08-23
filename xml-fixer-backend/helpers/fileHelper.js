@@ -17,6 +17,7 @@ async function renameFile(oldPath, newPath) {
     try {
         await fsPromises.rename(oldPath, newPath);
     } catch (error) {
+        console.error(error)
         throw new Error('Error renaming file');
     }
 }
@@ -25,6 +26,7 @@ async function readDirectory(directory) {
     try {
         return await fsPromises.readdir(directory);
     } catch (error) {
+        console.error(error);
         throw new Error('Error reading directory');
     }
 }
@@ -33,6 +35,7 @@ async function getFileStats(filepath) {
     try {
         return await fsPromises.stat(filepath);
     } catch (error) {
+        console.error(error)
         throw new Error('Error getting file stats');
     }
 }
@@ -41,6 +44,7 @@ async function readFile(filepath, encoding = 'utf8') {
     try {
         return await fsPromises.readFile(filepath, encoding);
     } catch (error) {
+        console.error(error)
         throw new Error('Error reading file');
     }
 }
@@ -58,6 +62,7 @@ async function deleteFile(filepath) {
     try {
         await fsPromises.unlink(filepath);
     } catch (error) {
+        console.error(error)
         throw new Error(`Error deleting file: ${error.message}`);
     }
 }

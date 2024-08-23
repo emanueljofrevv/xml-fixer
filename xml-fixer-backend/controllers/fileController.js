@@ -5,8 +5,8 @@ const path = require('path');
 const xmlProcessor = require('../services/xmlProcessor');
 const fileHelper = require('../helpers/fileHelper');
 
-const uploadDir = process.env.UPLOAD_DIR;
-const outputDir = process.env.OUTPUT_XML_PATH;
+const uploadDir = path.join(__dirname, `..${process.env.UPLOAD_DIR}`);
+const outputDir = path.join(__dirname, `..${process.env.OUTPUT_XML_PATH}`);
 
 module.exports = {
     uploadFile: (req, res) => {

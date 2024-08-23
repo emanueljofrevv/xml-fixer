@@ -1,10 +1,15 @@
 /* eslint-disable prettier/prettier */
+require('dotenv').config();
 
 const express = require('express');
+const path = require('path');
 const fileRouter = require('./routes/fileRouter');
 
 const server = express();
-const PORT = process.env.DEFAULT_PORT;
+const PORT = process.env.DEFAULT_PORT || 3000;
+
+// Serve static files from the FE directory
+server.use(express.static(path.join(__dirname, '../xml-fixer-frontend')));
 
 server.use((req, res, next) => {
     res.append('Access-Control-Allow-Origin', ['*']);

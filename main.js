@@ -1,18 +1,39 @@
+require('dotenv').config();
+
 const { exec } = require('child_process');
 const { app, BrowserWindow } = require('electron');
 const path = require('path');
+const fs = require('fs');
 
 let mainWindow;
 let serverProcess = null; // To store the server process
+const isDebug = process.env.NODE_ENV === 'development';
+
+// Function to load environment variables from env.json
+function loadEnvFromFile() {
+    const envFilePath = path.resolve(process.resourcesPath, 'env.json');
+    if (fs.existsSync(envFilePath)) {
+        const envContent = fs.readFileSync(envFilePath, 'utf8');
+        try {
+            const envVars = JSON.parse(envContent);
+            Object.assign(process.env, envVars);
+        } catch (error) {
+            console.error('Error parsing env.json:', error);
+        }
+    } else {
+        console.warn('env.json file not found.');
+    }
+}
 
 // Function to stop the existing server process
 function stopServer() {
     return new Promise((resolve, reject) => {
         if (serverProcess) {
             // For Windows: use taskkill to stop the server and its child processes
-            const killCommand = process.platform === 'win32'
-                ? `taskkill /pid ${serverProcess.pid} /T /F`
-                : `kill -9 ${serverProcess.pid}`;
+            const killCommand =
+                process.platform === 'win32'
+                    ? `taskkill /pid ${serverProcess.pid} /T /F`
+                    : `kill -9 ${serverProcess.pid}`;
 
             exec(killCommand, (err, stdout, stderr) => {
                 if (err) {
@@ -42,14 +63,26 @@ function createWindow() {
 }
 
 app.whenReady().then(() => {
+    // Load environment variables from env.json if not in debug mode
+    if (!isDebug) {
+        loadEnvFromFile();
+    }
+
     // Start the Express server
-    serverProcess = exec('node xml-fixer-backend/server.js', (err, stdout, stderr) => {
-        if (err) {
-            console.error(`Error starting server: ${stderr}`);
-            return;
+    const serverPath = isDebug ? __dirname : process.resourcesPath;
+    const serverScript = path.join(serverPath, 'xml-fixer-backend', 'server.js');
+
+    serverProcess = exec(
+        `node ${serverScript}`,
+        { env: { ...process.env, MY_VAR: 123 } },
+        (err, stdout, stderr) => {
+            if (err) {
+                console.error(`Error starting server: ${stderr}`);
+                return;
+            }
+            console.log(stdout);
         }
-        console.log(stdout);
-    });
+    );
 
     // Create the Electron window
     createWindow();

@@ -15,8 +15,10 @@ export const Home = () => {
       window.filesData,
       async (fileId) => {
         // Details action
+        const file = window.filesData.find((file) => file.id === fileId);
+
         const fileDetails = await getFileDetails(fileId);
-        showModal(fileDetails.markdown);
+        showModal(fileDetails.markdown, file.originalFileName);
       },
       (fileId) => {
         // Delete action
@@ -43,8 +45,12 @@ export const Home = () => {
     }
   );
 
-  const showModal = (fileDetails) => {
-    const modal = FileModal(fileDetails, () => container.removeChild(modal));
+  const showModal = (fileDetails, fileName) => {
+    const modal = FileModal(
+      fileDetails,
+      () => container.removeChild(modal),
+      fileName
+    );
     container.appendChild(modal);
   };
 

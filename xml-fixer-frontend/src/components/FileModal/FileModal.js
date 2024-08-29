@@ -1,10 +1,10 @@
 import { parseMarkdown } from "../../helpers/parse-markdown.js";
 
-export const FileModal = (fileDetails, onClose) => {
+export const FileModal = (fileDetails, onClose, fileName) => {
   const container = document.createElement("div");
   container.className = "file-modal";
 
-  const markdownHtml = parseMarkdown(fileDetails);
+  const markdownHtml = parseMarkdown(fileDetails, fileName);
 
   const modalContent = document.createElement("div");
   modalContent.className = "modal-content";

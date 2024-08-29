@@ -41,10 +41,32 @@
   overflow-y: auto;
 }
 
+.modal-body-content h2 {
+  margin-top: 2rem;
+}
+
+.modal-body-content h4 {
+  margin-top: 2rem;
+}
+
+.modal-body-content strong {
+  font-size: 16px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  margin-left: 1rem;
+}
+
+.modal-body-content strong:first-of-type {
+  display: block;
+  font-size: 18px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  text-decoration: underline;
+}
+
 .modal-content h1,
 .modal-content h2,
 .modal-content h3 {
-  font-family: Arial, sans-serif;
   margin-bottom: 10px;
 }
 
@@ -57,6 +79,7 @@
 .modal-content ul {
   list-style-type: disc;
   margin-left: 20px;
+  margin-top: 8px;
 }
 
 .modal-content a {

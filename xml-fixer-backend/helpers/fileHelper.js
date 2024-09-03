@@ -17,7 +17,7 @@ async function renameFile(oldPath, newPath) {
     try {
         await fsPromises.rename(oldPath, newPath);
     } catch (error) {
-        console.error(error)
+        console.error(error);
         throw new Error('Error renaming file');
     }
 }
@@ -35,7 +35,7 @@ async function getFileStats(filepath) {
     try {
         return await fsPromises.stat(filepath);
     } catch (error) {
-        console.error(error)
+        console.error(error);
         throw new Error('Error getting file stats');
     }
 }
@@ -44,7 +44,7 @@ async function readFile(filepath, encoding = 'utf8') {
     try {
         return await fsPromises.readFile(filepath, encoding);
     } catch (error) {
-        console.error(error)
+        console.error(error);
         throw new Error('Error reading file');
     }
 }
@@ -62,7 +62,7 @@ async function deleteFile(filepath) {
     try {
         await fsPromises.unlink(filepath);
     } catch (error) {
-        console.error(error)
+        console.error(error);
         throw new Error(`Error deleting file: ${error.message}`);
     }
 }
@@ -78,8 +78,36 @@ function encodeFilename(input) {
 function decodeFilename(encoded) {
     // This calculates the remainder when the length of the string is divided by 4.
     // In Base64, the string length must be a multiple of 4. If it's not, it needs padding.
-    const properBase64encoded = encoded.padEnd(encoded.length + ((4 - (encoded.length % 4)) % 4), '=');
-    return Buffer.from(properBase64encoded.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString('utf-8');
+    const properBase64encoded = encoded.padEnd(
+        encoded.length + ((4 - (encoded.length % 4)) % 4),
+        '='
+    );
+    return Buffer.from(
+        properBase64encoded.replace(/-/g, '+').replace(/_/g, '/'),
+        'base64'
+    ).toString('utf-8');
+}
+
+function addVersionToFiles(files) {
+    const nameCounter = {};
+
+    return files
+        .sort((a, b) => new Date(a.createDate) - new Date(b.createDate)) // Sort by date asc
+        .map((item) => {
+            const fileName = item.originalFileName;
+
+            // Initialize or increment version for each originalFileName
+            if (!nameCounter[fileName]) {
+                nameCounter[fileName] = 1;
+            } else {
+                nameCounter[fileName]++;
+            }
+
+            return {
+                ...item,
+                version: nameCounter[fileName],
+            };
+        });
 }
 
 module.exports = {
@@ -92,4 +120,5 @@ module.exports = {
     deleteFile,
     encodeFilename,
     decodeFilename,
+    addVersionToFiles,
 };

@@ -74,7 +74,10 @@ module.exports = {
             });
 
             const files = (await Promise.all(filePromises)).filter((file) => file !== null);
-            return res.status(200).json(files);
+            const versionedFiles = fileHelper
+                .addVersionToFiles(files)
+                .sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
+            return res.status(200).json(versionedFiles);
         } catch (error) {
             console.error('Error reading files:', error);
             return res.status(500).send('Error reading input folder');

@@ -1,6 +1,4 @@
 /* eslint-disable prettier/prettier */
-/* eslint-disable no-unused-vars */
-/* eslint-disable no-use-before-define */
 /* eslint-disable no-param-reassign */
 
 const nspell = require('nspell');
@@ -70,35 +68,40 @@ const textInTagsFields = [
 /* -------------------------------------------------------------------------- */
 /*                              HELPER FUNCTIONS                              */
 /* -------------------------------------------------------------------------- */
+function getPageFields(form, pIndex) {
+    return form.FormPages[pIndex].FormPage[0].FieldList[0].BaseField;
+}
 
-function createAccTextWithLabel(form, pIndex, fieldIndex, fieldName) {
-    const field = getPageFields(form, pIndex)[fieldIndex];
-    const fieldType = field.$['xsi:type'];
-    const fields = getPageFields(form, pIndex);
+function getLabelByFieldByName(form, fieldName) {
+    const fields = form.FormPages[0].FormPage[0].FieldList[0].BaseField;
+    let labelData;
 
-    let isRequired = false;
-    let cleanedLabelText = '';
+    fields.forEach((field) => {
+        const fieldType = field.$['xsi:type'];
+        const isLabel = fieldType === fieldsMapping.label;
 
-    const hasTextInField = textInTagsFields.includes(fieldType);
+        if (isLabel) {
+            const labelLayoutTop = field.LayoutTop[0];
+            const labelText = field.Text[0];
+            const namePartialMatch = labelText.includes(fieldName.trim());
+            const similarTopDistance = Math.abs(field.LayoutTop[0] - labelLayoutTop) <= 15;
 
-    if (hasTextInField) {
-        const [fieldText] = field.Text;
-        isRequired = isRequiredField(field, fieldText);
-        [cleanedLabelText] = fieldText.split('<')[0].split(':');
-    } else {
-        const fieldLabel = findFieldLabeByProximity(field, fields);
-        const labelText = fieldLabel ? fieldLabel.Text[0] : '';
-        isRequired = isRequiredField(field, labelText);
-        [cleanedLabelText] = labelText.split('<')[0].split(':');
+            if (namePartialMatch && similarTopDistance) {
+                labelData = labelText;
+            }
+        }
+    });
+
+    return labelData;
+}
+
+function getPropertyValueByPropetyName(field, propertyName) {
+    const hasPorperty = propertyName in field;
+    if (hasPorperty) {
+        return field[propertyName][0];
     }
 
-    let newAccText = cleanedLabelText.trim();
-
-    if (isRequired) {
-        newAccText += ' field Required';
-    }
-
-    return newAccText;
+    throw new Error('propertyName not exist');
 }
 
 function isRequiredField(field, labelText) {
@@ -111,73 +114,6 @@ function isRequiredField(field, labelText) {
         : labelText && labelText.includes('*');
 
     return isRequired;
-}
-
-function checkAccessibility(form, pIndex, fieldIndex) {
-    const field = getPageFields(form, pIndex)[fieldIndex];
-    const fieldType = field.$['xsi:type'];
-    const fieldName = getFieldName(form, pIndex, fieldIndex);
-    const fieldHasLabel = !noLabelFields.includes(fieldType);
-    const fieldNameCanBeUsed = !noTitleCaseFields.includes(fieldType);
-    let currentAccText = getAccesibilityText(form, pIndex, fieldIndex);
-
-    let newAccText = createAccTextWithLabel(form, pIndex, fieldIndex, fieldName);
-
-    if (!newAccText) {
-        newAccText = fieldName;
-    }
-
-    if (!currentAccText) {
-        if (fix.accessibilityLabel && fieldNameCanBeUsed) {
-            form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
-                fieldIndex
-            ].AccessibilityLabel[0] = newAccText;
-            currentAccText = newAccText;
-
-            addToReport(
-                `#### ${fieldName}`,
-                `The \`Accessibility Label\` was set to \`'${newAccText}'\`.`
-            );
-        } else {
-            addToReport(`#### ${fieldName}`, `The \`Accessibility Label\` is empty.`);
-        }
-    }
-
-    if (currentAccText && currentAccText.toLowerCase() !== newAccText.toLowerCase()) {
-        if (fix.accessibilityLabel && fieldNameCanBeUsed) {
-            form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
-                fieldIndex
-            ].AccessibilityLabel[0] = newAccText;
-
-            addToReport(
-                `#### ${fieldName}`,
-                `The \`Accessibility Label\` was changed from \`'${currentAccText}'\` to \`'${newAccText}'\`.`
-            );
-        } else if (fieldNameCanBeUsed) {
-            addToReport(
-                `#### ${fieldName}`,
-                `The current \`Accessibility Label\` value \`'${currentAccText}'\` does not match with the recommended value \`'${newAccText}'\`.`
-            );
-        } else if (!isStrTitleCase(currentAccText)) {
-            addToReport(
-                `#### ${fieldName}`,
-                `The current \`Accessibility Label\` value \`'${currentAccText}'\` does not follow the accessibility standards.`
-            );
-        } else {
-            const labelTextCouldBeOk = currentAccText
-                .split(' ')
-                .filter((word) => fieldName.includes(word));
-
-            if (!labelTextCouldBeOk) {
-                addToReport(
-                    `#### ${fieldName}`,
-                    `The current \`Accessibility Label\` value \`'${currentAccText}'\` needs to be manually reviewed.`
-                );
-            }
-        }
-    }
-
-    return form;
 }
 
 function checkDistanceToBorder(form, field) {
@@ -255,24 +191,6 @@ function findLabelFieldByProximity(labelData, fields) {
     return field;
 }
 
-function fixTitleCase(form, pIndex, fieldIndex) {
-    const fieldName = getFieldName(form, pIndex, fieldIndex);
-
-    if (fix.case) {
-        const titleCaseFieldName = strToTitleCase(fieldName);
-
-        form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[fieldIndex].Name[0] =
-            titleCaseFieldName;
-
-        addToReport(
-            `#### ${fieldName}`,
-            `The field name \`${fieldName}\` was changed to \`${titleCaseFieldName}\`.`
-        );
-    }
-
-    return form;
-}
-
 function getAccesibilityText(form, pIndex, fieldIndex) {
     const fields = getPageFields(form, pIndex);
     const field = fields[fieldIndex];
@@ -287,40 +205,34 @@ function getFieldName(form, pIndex, fieldIndex) {
     return fieldName;
 }
 
-function getPageFields(form, pIndex) {
-    return form.FormPages[pIndex].FormPage[0].FieldList[0].BaseField;
-}
+function createAccTextWithLabel(form, pIndex, fieldIndex, fieldName) {
+    const field = getPageFields(form, pIndex)[fieldIndex];
+    const fieldType = field.$['xsi:type'];
+    const fields = getPageFields(form, pIndex);
 
-function getLabelByFieldByName(form, fieldName) {
-    const fields = form.FormPages[0].FormPage[0].FieldList[0].BaseField;
-    let labelData;
+    let isRequired = false;
+    let cleanedLabelText = '';
 
-    fields.forEach((field) => {
-        const fieldType = field.$['xsi:type'];
-        const isLabel = fieldType === fieldsMapping.label;
+    const hasTextInField = textInTagsFields.includes(fieldType);
 
-        if (isLabel) {
-            const labelLayoutTop = field.LayoutTop[0];
-            const labelText = field.Text[0];
-            const namePartialMatch = labelText.includes(fieldName.trim());
-            const similarTopDistance = Math.abs(field.LayoutTop[0] - labelLayoutTop) <= 15;
-
-            if (namePartialMatch && similarTopDistance) {
-                labelData = labelText;
-            }
-        }
-    });
-
-    return labelData;
-}
-
-function getPropertyValueByPropetyName(field, propertyName) {
-    const hasPorperty = propertyName in field;
-    if (hasPorperty) {
-        return field[propertyName][0];
+    if (hasTextInField) {
+        const [fieldText] = field.Text;
+        isRequired = isRequiredField(field, fieldText);
+        [cleanedLabelText] = fieldText.split('<')[0].split(':');
+    } else {
+        const fieldLabel = findFieldLabeByProximity(field, fields);
+        const labelText = fieldLabel ? fieldLabel.Text[0] : '';
+        isRequired = isRequiredField(field, labelText);
+        [cleanedLabelText] = labelText.split('<')[0].split(':');
     }
 
-    throw new Error('propertyName not exist');
+    let newAccText = cleanedLabelText.trim();
+
+    if (isRequired) {
+        newAccText += ' field Required';
+    }
+
+    return newAccText;
 }
 
 function hasDefaultName(fieldName, fieldType = 'Default') {
@@ -486,6 +398,10 @@ function checkTitleCase(fieldName) {
     return true;
 }
 
+function wordToUppercase(word) {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+}
+
 function strToTitleCase(str) {
     // Split the string into an array of words
     const words = str.split(' ');
@@ -497,8 +413,89 @@ function strToTitleCase(str) {
     return titleCaseWords.join(' ');
 }
 
-function wordToUppercase(word) {
-    return word.charAt(0).toUpperCase() + word.slice(1);
+function fixTitleCase(form, pIndex, fieldIndex) {
+    const fieldName = getFieldName(form, pIndex, fieldIndex);
+
+    if (fix.case) {
+        const titleCaseFieldName = strToTitleCase(fieldName);
+
+        form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[fieldIndex].Name[0] =
+            titleCaseFieldName;
+
+        addToReport(
+            `#### ${fieldName}`,
+            `The field name \`${fieldName}\` was changed to \`${titleCaseFieldName}\`.`
+        );
+    }
+
+    return form;
+}
+
+function checkAccessibility(form, pIndex, fieldIndex) {
+    const field = getPageFields(form, pIndex)[fieldIndex];
+    const fieldType = field.$['xsi:type'];
+    const fieldName = getFieldName(form, pIndex, fieldIndex);
+    const fieldHasLabel = !noLabelFields.includes(fieldType);
+    const fieldNameCanBeUsed = !noTitleCaseFields.includes(fieldType);
+    let currentAccText = getAccesibilityText(form, pIndex, fieldIndex);
+
+    let newAccText = createAccTextWithLabel(form, pIndex, fieldIndex, fieldName);
+
+    if (!newAccText) {
+        newAccText = fieldName;
+    }
+
+    if (!currentAccText) {
+        if (fix.accessibilityLabel && fieldNameCanBeUsed) {
+            form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
+                fieldIndex
+            ].AccessibilityLabel[0] = newAccText;
+            currentAccText = newAccText;
+
+            addToReport(
+                `#### ${fieldName}`,
+                `The \`Accessibility Label\` was set to \`'${newAccText}'\`.`
+            );
+        } else {
+            addToReport(`#### ${fieldName}`, `The \`Accessibility Label\` is empty.`);
+        }
+    }
+
+    if (currentAccText && currentAccText.toLowerCase() !== newAccText.toLowerCase()) {
+        if (fix.accessibilityLabel && fieldNameCanBeUsed) {
+            form.FormPages[0].FormPage[pIndex].FieldList[0].BaseField[
+                fieldIndex
+            ].AccessibilityLabel[0] = newAccText;
+
+            addToReport(
+                `#### ${fieldName}`,
+                `The \`Accessibility Label\` was changed from \`'${currentAccText}'\` to \`'${newAccText}'\`.`
+            );
+        } else if (fieldNameCanBeUsed) {
+            addToReport(
+                `#### ${fieldName}`,
+                `The current \`Accessibility Label\` value \`'${currentAccText}'\` does not match with the recommended value \`'${newAccText}'\`.`
+            );
+        } else if (!isStrTitleCase(currentAccText)) {
+            addToReport(
+                `#### ${fieldName}`,
+                `The current \`Accessibility Label\` value \`'${currentAccText}'\` does not follow the accessibility standards.`
+            );
+        } else {
+            const labelTextCouldBeOk = currentAccText
+                .split(' ')
+                .filter((word) => fieldName.includes(word));
+
+            if (!labelTextCouldBeOk) {
+                addToReport(
+                    `#### ${fieldName}`,
+                    `The current \`Accessibility Label\` value \`'${currentAccText}'\` needs to be manually reviewed.`
+                );
+            }
+        }
+    }
+
+    return form;
 }
 
 /* -------------------------------------------------------------------------- */

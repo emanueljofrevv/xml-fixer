@@ -74,7 +74,7 @@ app.whenReady().then(() => {
 
     serverProcess = exec(
         `node ${serverScript}`,
-        { env: { ...process.env, MY_VAR: 123 } },
+        { env: { ...process.env } },
         (err, stdout, stderr) => {
             if (err) {
                 console.error(`Error starting server: ${stderr}`);

@@ -7,7 +7,7 @@
         "start": "cross-env NODE_ENV=production electron-forge start",
         "test": "echo \"Error: no test specified\" && exit 1",
         "package": "cross-env NODE_ENV=production electron-forge package",
-        "premake": "node scripts/create-env-json.js",
+        "premake": "node scripts/premake-tasks.js",
         "make": "cross-env NODE_ENV=production electron-forge make"
     },
     "repository": {

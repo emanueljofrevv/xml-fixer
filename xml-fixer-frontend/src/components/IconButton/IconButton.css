@@ -1,0 +1,19 @@
+.icon-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 0 5px;
+}
+
+.icon-button .icon {
+  font-size: 1.2em;
+}
+
+.icon-button:hover {
+  opacity: 0.7;
+}
+
+.icon-button:focus {
+  outline: 2px solid #2296f3;
+}

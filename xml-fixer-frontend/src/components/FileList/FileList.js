@@ -13,6 +13,7 @@ export const FileList = (files, onViewDetails, onDeleteFile) => {
             <tr>
                 <th>File</th>
                 <th>Date</th>
+                <th>Version</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -23,6 +24,7 @@ export const FileList = (files, onViewDetails, onDeleteFile) => {
                 <tr>
                     <td class="text">${file.originalFileName || file.id}</td>
                     <td class="text">${formatDate(file.createDate)}</td>
+                    <td class="text">v${file.version || 1}</td>
                     <td>
                         <button class="view-btn" data-id="${
                           file.id

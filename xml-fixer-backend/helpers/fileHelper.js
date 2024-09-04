@@ -1,6 +1,7 @@
 /* eslint-disable prettier/prettier */
 
 const fs = require('fs');
+const path = require('path');
 
 const fsPromises = fs.promises;
 
@@ -110,6 +111,28 @@ function addVersionToFiles(files) {
         });
 }
 
+async function getAllFilesInFolder(folder) {
+    const fileNames = await readDirectory(folder);
+
+    const filePromises = fileNames.map(async (fileName) => {
+        const filePath = path.resolve(folder, fileName);
+        const stat = await getFileStats(filePath);
+        const [, originalFileName] = decodeFilename(fileName).split(':');
+
+        if (stat.isFile()) {
+            return {
+                id: fileName,
+                originalFileName,
+                createDate: stat.ctime,
+            };
+        }
+
+        return null;
+    });
+
+    return (await Promise.all(filePromises)).filter((file) => file !== null);
+}
+
 module.exports = {
     writeFile,
     renameFile,
@@ -121,4 +144,5 @@ module.exports = {
     encodeFilename,
     decodeFilename,
     addVersionToFiles,
+    getAllFilesInFolder,
 };

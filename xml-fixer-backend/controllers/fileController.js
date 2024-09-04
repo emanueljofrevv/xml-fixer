@@ -31,17 +31,23 @@ module.exports = {
                 try {
                     // Rename and process the file
                     await fileHelper.renameFile(filePath, newFilePath);
-                    const fileCreateDate = new Date().toISOString();
 
                     // Process XML file
                     await xmlProcessor.processXmlFile(newFilePath);
 
+                    // Get all files and add versions
+                    const filesInUploadDir = (
+                        await fileHelper.getAllFilesInFolder(uploadDir)
+                    ).filter((el) => el.originalFileName === noExtOriginalFilename);
+
+                    const versionedFiles = fileHelper
+                        .addVersionToFiles(filesInUploadDir)
+                        .sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
+
+                    const [uploadedFileData, ] = versionedFiles;
+
                     // Return success response with the necessary details
-                    return res.status(200).json({
-                        id: encodedFileName,
-                        originalFileName: noExtOriginalFilename,
-                        createDate: fileCreateDate,
-                    });
+                    return res.status(200).json(uploadedFileData);
                 } catch (renameError) {
                     console.error('Error moving or processing file:', renameError);
                     return res.status(500).send('Error in moving or processing file');
@@ -55,25 +61,8 @@ module.exports = {
 
     getAllFiles: async (req, res) => {
         try {
-            const fileNames = await fileHelper.readDirectory(uploadDir);
+            const files = await fileHelper.getAllFilesInFolder(uploadDir);
 
-            const filePromises = fileNames.map(async (fileName) => {
-                const filePath = path.resolve(uploadDir, fileName);
-                const stat = await fileHelper.getFileStats(filePath);
-                const [, originalFileName] = fileHelper.decodeFilename(fileName).split(':');
-
-                if (stat.isFile()) {
-                    return {
-                        id: fileName,
-                        originalFileName,
-                        createDate: stat.ctime,
-                    };
-                }
-
-                return null;
-            });
-
-            const files = (await Promise.all(filePromises)).filter((file) => file !== null);
             const versionedFiles = fileHelper
                 .addVersionToFiles(files)
                 .sort((a, b) => new Date(b.createDate) - new Date(a.createDate));

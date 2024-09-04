@@ -1,10 +1,22 @@
 .file-upload {
   align-items: center;
+  background: linear-gradient(135deg, #ecf0f3, #e0eafc);
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
   margin-bottom: 20px;
+  padding: 10px 0;
+  position: fixed;
+  top: 60px;
+  width: 100%;
+  z-index: 999;
+}
+
+.table-container {
+  height: calc(100vh - 120px);
+  margin-top: 350px;
+  overflow-y: auto;
 }
 
 .upload-container {

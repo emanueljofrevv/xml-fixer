@@ -15,6 +15,9 @@ export const Home = () => {
 
   const header = Header();
 
+  const tableContainer = document.createElement("div");
+  tableContainer.className = "table-container";
+
   const renderFileList = () => {
     const paginatedRecords = paginate(
       window.filesData,
@@ -66,10 +69,9 @@ export const Home = () => {
       },
     });
 
-    container.innerHTML = "";
-    container.appendChild(fileUpload);
-    container.appendChild(fileList);
-    container.appendChild(paginationControls);
+    tableContainer.innerHTML = "";
+    tableContainer.appendChild(fileList);
+    tableContainer.appendChild(paginationControls);
   };
 
   const fileUpload = FileUpload(
@@ -93,6 +95,9 @@ export const Home = () => {
   };
 
   renderFileList();
+
+  container.appendChild(fileUpload);
+  container.appendChild(tableContainer);
 
   document.body.prepend(header);
 

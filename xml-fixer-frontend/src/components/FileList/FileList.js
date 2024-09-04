@@ -49,7 +49,10 @@ export const FileList = (
       `.action-buttons[data-id="${file.id}"]`
     );
 
+    // View action
     const viewButton = ViewButton(() => onViewDetails(file.id));
+
+    // Delete action
     const deleteButton = DeleteButton(() => {
       ConfirmationModal({
         message: "Are you sure you want to delete this file?",
@@ -68,6 +71,8 @@ export const FileList = (
         },
       });
     });
+
+    // Download action
     const downloadButton = DownloadButton(() => onDownloadFile(file.id));
 
     actionCell.appendChild(viewButton);

@@ -2,7 +2,7 @@ import { FileUpload } from "./../../components/FileUpload/FileUpload.js";
 import { FileList } from "./../../components/FileList/FileList.js";
 import { FileModal } from "./../../components/FileModal/FileModal.js";
 import { Header } from "./../../components/Header/Header.js";
-import { getFileDetails } from "./../../services/api.js";
+import { getFileDetails, downloadFile } from "./../../services/api.js";
 
 export const Home = () => {
   const container = document.createElement("div");
@@ -26,6 +26,23 @@ export const Home = () => {
           (file) => file.id !== fileId
         );
         renderFileList();
+      },
+      async (fileId) => {
+        // Download action
+        try {
+          const fileBlob = await downloadFile(fileId);
+          const file = window.filesData.find((file) => file.id === fileId);
+
+          const url = URL.createObjectURL(fileBlob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = `${file.originalFileName}.xml`;
+          a.click();
+
+          URL.revokeObjectURL(url);
+        } catch (error) {
+          console.error("Error downloading file:", error);
+        }
       }
     );
 

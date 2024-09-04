@@ -70,3 +70,23 @@ export const deleteAllFiles = async () => {
     throw error;
   }
 };
+
+export const downloadFile = async (fileId) => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/download/${fileId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/octet-stream",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error("Failed to download file");
+    }
+
+    return response.blob();
+  } catch (error) {
+    console.error("Error retrieving file:", error);
+    throw error;
+  }
+};

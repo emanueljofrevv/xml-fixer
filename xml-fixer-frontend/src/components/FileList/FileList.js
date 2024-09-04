@@ -28,9 +28,11 @@ export const FileList = (
             </tr>
         </thead>
         <tbody>
-            ${files
-              .map(
-                (file) => `
+            ${
+              files.length
+                ? files
+                    .map(
+                      (file) => `
                 <tr>
                     <td class="text">${file.originalFileName || file.id}</td>
                     <td class="text">${formatDate(file.createDate)}</td>
@@ -38,8 +40,10 @@ export const FileList = (
                     <td class="action-buttons" data-id="${file.id}"></td>
                 </tr>
             `
-              )
-              .join("")}
+                    )
+                    .join("")
+                : `<tr class="no-records"><td colspan=4>There are no files to display. Please upload an XML file.</td></tr>`
+            }
         </tbody>
     `;
 

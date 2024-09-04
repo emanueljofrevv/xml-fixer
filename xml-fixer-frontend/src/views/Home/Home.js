@@ -2,6 +2,7 @@ import { FileUpload } from "./../../components/FileUpload/FileUpload.js";
 import { FileList } from "./../../components/FileList/FileList.js";
 import { FileModal } from "./../../components/FileModal/FileModal.js";
 import { Header } from "./../../components/Header/Header.js";
+import { Pagination } from "./../../components/Pagination/Pagination.js";
 import { getFileDetails, downloadFile } from "./../../services/api.js";
 import { paginate } from "../../helpers/paginate.js";
 import { ITEMS_PER_PAGE } from "../../config/config.js";
@@ -26,7 +27,6 @@ export const Home = () => {
       async (fileId) => {
         // Details action
         const file = window.filesData.find((file) => file.id === fileId);
-
         const fileDetails = await getFileDetails(fileId);
         showModal(fileDetails.markdown, file.originalFileName);
       },
@@ -56,10 +56,20 @@ export const Home = () => {
       }
     );
 
+    const paginationControls = Pagination({
+      currentPage,
+      totalItems: window.filesData.length,
+      itemsPerPage: ITEMS_PER_PAGE,
+      onPageChange: (newPage) => {
+        currentPage = newPage;
+        renderFileList();
+      },
+    });
+
     container.innerHTML = "";
     container.appendChild(fileUpload);
     container.appendChild(fileList);
-    container.appendChild(renderPaginationControls());
+    container.appendChild(paginationControls);
   };
 
   const fileUpload = FileUpload(
@@ -80,39 +90,6 @@ export const Home = () => {
       fileName
     );
     container.appendChild(modal);
-  };
-
-  const renderPaginationControls = () => {
-    const paginationContainer = document.createElement("div");
-    paginationContainer.className = "pagination-controls";
-
-    const totalPages = Math.ceil(window.filesData.length / ITEMS_PER_PAGE);
-    const isDisabled = currentPage === totalPages || !window.filesData.length;
-
-    const prevButton = document.createElement("button");
-    prevButton.textContent = "<";
-    prevButton.disabled = currentPage === 1;
-    prevButton.addEventListener("click", () => {
-      if (currentPage > 1) {
-        currentPage--;
-        renderFileList();
-      }
-    });
-
-    const nextButton = document.createElement("button");
-    nextButton.textContent = ">";
-    nextButton.disabled = isDisabled;
-    nextButton.addEventListener("click", () => {
-      if (currentPage < totalPages) {
-        currentPage++;
-        renderFileList();
-      }
-    });
-
-    paginationContainer.appendChild(prevButton);
-    paginationContainer.appendChild(nextButton);
-
-    return paginationContainer;
   };
 
   renderFileList();

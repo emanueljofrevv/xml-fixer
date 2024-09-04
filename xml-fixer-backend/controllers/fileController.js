@@ -23,31 +23,27 @@ module.exports = {
                 const file = files.xmlFile[0];
                 const filePath = file.filepath;
                 const noExtOriginalFilename = file.originalFilename.replace('.xml', '');
+                const fileVersion = await fileHelper.getFileVersion(uploadDir, noExtOriginalFilename);
                 const encodedFileName = fileHelper.encodeFilename(
-                    `${file.newFilename}:${noExtOriginalFilename}`
+                    `${file.newFilename}:${noExtOriginalFilename}:${fileVersion}`
                 );
                 const newFilePath = path.join(uploadDir, encodedFileName);
 
                 try {
                     // Rename and process the file
                     await fileHelper.renameFile(filePath, newFilePath);
+                    const fileCreateDate = new Date().toISOString();
 
                     // Process XML file
                     await xmlProcessor.processXmlFile(newFilePath);
 
-                    // Get all files and add versions
-                    const filesInUploadDir = (
-                        await fileHelper.getAllFilesInFolder(uploadDir)
-                    ).filter((el) => el.originalFileName === noExtOriginalFilename);
-
-                    const versionedFiles = fileHelper
-                        .addVersionToFiles(filesInUploadDir)
-                        .sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
-
-                    const [uploadedFileData, ] = versionedFiles;
-
                     // Return success response with the necessary details
-                    return res.status(200).json(uploadedFileData);
+                    return res.status(200).json({
+                        id: encodedFileName,
+                        originalFileName: noExtOriginalFilename,
+                        createDate: fileCreateDate,
+                        version: fileVersion,
+                    });
                 } catch (renameError) {
                     console.error('Error moving or processing file:', renameError);
                     return res.status(500).send('Error in moving or processing file');
@@ -62,11 +58,10 @@ module.exports = {
     getAllFiles: async (req, res) => {
         try {
             const files = await fileHelper.getAllFilesInFolder(uploadDir);
-
-            const versionedFiles = fileHelper
-                .addVersionToFiles(files)
-                .sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
-            return res.status(200).json(versionedFiles);
+            const soortedFiles = files.sort(
+                (a, b) => new Date(b.createDate) - new Date(a.createDate)
+            );
+            return res.status(200).json(soortedFiles);
         } catch (error) {
             console.error('Error reading files:', error);
             return res.status(500).send('Error reading input folder');

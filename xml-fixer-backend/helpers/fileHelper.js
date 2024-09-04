@@ -89,41 +89,20 @@ function decodeFilename(encoded) {
     ).toString('utf-8');
 }
 
-function addVersionToFiles(files) {
-    const nameCounter = {};
-
-    return files
-        .sort((a, b) => new Date(a.createDate) - new Date(b.createDate)) // Sort by date asc
-        .map((item) => {
-            const fileName = item.originalFileName;
-
-            // Initialize or increment version for each originalFileName
-            if (!nameCounter[fileName]) {
-                nameCounter[fileName] = 1;
-            } else {
-                nameCounter[fileName]++;
-            }
-
-            return {
-                ...item,
-                version: nameCounter[fileName],
-            };
-        });
-}
-
 async function getAllFilesInFolder(folder) {
     const fileNames = await readDirectory(folder);
 
     const filePromises = fileNames.map(async (fileName) => {
         const filePath = path.resolve(folder, fileName);
         const stat = await getFileStats(filePath);
-        const [, originalFileName] = decodeFilename(fileName).split(':');
+        const [, originalFileName, version] = decodeFilename(fileName).split(':');
 
         if (stat.isFile()) {
             return {
                 id: fileName,
                 originalFileName,
                 createDate: stat.ctime,
+                version,
             };
         }
 
@@ -131,6 +110,15 @@ async function getAllFilesInFolder(folder) {
     });
 
     return (await Promise.all(filePromises)).filter((file) => file !== null);
+}
+
+async function getFileVersion(folder, fileName) {
+    const filesByName = (await getAllFilesInFolder(folder))
+        .filter((el) => el.originalFileName === fileName)
+        .sort((a, b) => new Date(b.createDate) - new Date(a.createDate));
+    const [lastFile] = filesByName;
+    const fileVersion = lastFile?.version ? Number(lastFile.version) + 1 : 1;
+    return fileVersion;
 }
 
 module.exports = {
@@ -143,6 +131,6 @@ module.exports = {
     deleteFile,
     encodeFilename,
     decodeFilename,
-    addVersionToFiles,
     getAllFilesInFolder,
+    getFileVersion,
 };

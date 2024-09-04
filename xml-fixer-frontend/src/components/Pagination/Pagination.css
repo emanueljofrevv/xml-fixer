@@ -1,16 +1,39 @@
 .pagination-controls {
+  align-items: center;
   display: flex;
   justify-content: center;
   margin-top: 20px;
 }
 
 .pagination-controls button {
-  margin: 0 5px;
-  padding: 5px 10px;
+  background-color: #2296f3;
+  border-radius: 5px;
+  border: none;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: #fff;
   cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 0 10px;
+  padding: 10px 20px;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.pagination-controls button:hover:not(:disabled) {
+  background-color: #1976d2;
+  transform: translateY(-2px);
 }
 
 .pagination-controls button:disabled {
   cursor: not-allowed;
-  opacity: 0.5;
+  background-color: #cccccc;
+  opacity: 0.6;
+}
+
+.pagination-controls button:disabled:hover {
+  transform: none;
+}
+
+.pagination-controls button:active:not(:disabled) {
+  transform: translateY(1px);
 }

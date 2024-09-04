@@ -10,7 +10,7 @@ export const Pagination = ({
   const totalPages = Math.ceil(totalItems / itemsPerPage);
 
   const prevButton = document.createElement("button");
-  prevButton.textContent = "<";
+  prevButton.textContent = "Previous";
   prevButton.disabled = currentPage === 1;
   prevButton.addEventListener("click", () => {
     if (currentPage > 1) {
@@ -19,7 +19,7 @@ export const Pagination = ({
   });
 
   const nextButton = document.createElement("button");
-  nextButton.textContent = ">";
+  nextButton.textContent = "Next";
   nextButton.disabled = currentPage === totalPages || totalItems === 0;
   nextButton.addEventListener("click", () => {
     if (currentPage < totalPages) {

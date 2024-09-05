@@ -76,6 +76,7 @@ resources/
 .yarn-integrity
 
 # dotenv environment variable files
+env.json
 .env
 .env.development.local
 .env.test.local

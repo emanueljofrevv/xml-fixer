@@ -1,13 +1,14 @@
 .file-upload {
+  align-items: center;
   background: linear-gradient(135deg, #ecf0f3, #e0eafc);
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  justify-content: space-between;
+  justify-content: center;
+  margin-bottom: 1rem;
   padding: 10px 0;
   width: 100%;
   z-index: 999;
-  align-items: flex-end;
 }
 
 .table-container {

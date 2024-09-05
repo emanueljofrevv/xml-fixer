@@ -18,7 +18,7 @@ module.exports = {
       config: {
         name: "xml-fixer",
         options: {
-          icon: "./PASmallLogo.png",
+          icon: "./vv-logo.png",
         },
       },
     },
@@ -27,7 +27,7 @@ module.exports = {
       config: {
         name: "xml-fixer",
         options: {
-          icon: "./PASmallLogo.png",
+          icon: "./vv-logo.png",
         },
       },
     },
@@ -36,7 +36,7 @@ module.exports = {
       config: {
         name: "xml-fixer",
         options: {
-          icon: "./PASmallLogo.png",
+          icon: "./vv-logo.png",
           categories: ["Utility"],
         },
       },

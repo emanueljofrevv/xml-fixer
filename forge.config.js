@@ -15,20 +15,28 @@ module.exports = {
     {
       name: "@electron-forge/maker-zip",
       platforms: ["darwin", "linux"],
+      config: {
+        name: "xml-fixer",
+        options: {
+          icon: "./PASmallLogo.png",
+        },
+      },
     },
     {
       name: "@electron-forge/maker-squirrel",
       config: {
         name: "xml-fixer",
+        options: {
+          icon: "./PASmallLogo.png",
+        },
       },
     },
     {
       name: "@electron-forge/maker-deb",
       config: {
+        name: "xml-fixer",
         options: {
-          maintainer: "Test FerChamorro",
-          homepage: "https://google.com",
-          icon: "./bombillo.png",
+          icon: "./PASmallLogo.png",
           categories: ["Utility"],
         },
       },

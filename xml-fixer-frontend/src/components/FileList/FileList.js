@@ -24,7 +24,7 @@ export const FileList = (
                 <th>File</th>
                 <th>Date</th>
                 <th>Version</th>
-                <th>Actions</th>
+                <th class="action-buttons">Actions</th>
             </tr>
         </thead>
         <tbody>

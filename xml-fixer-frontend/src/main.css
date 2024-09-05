@@ -12,6 +12,7 @@ body {
   display: flex;
   height: 100vh;
   justify-content: center;
+  overflow-y: hidden;
 }
 
 ::-webkit-scrollbar {

@@ -2,10 +2,11 @@
   align-items: center;
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 .pagination-controls button {
+  min-width: 120px;
   background-color: #2296f3;
   border-radius: 5px;
   border: none;

@@ -1,0 +1,116 @@
+.file-modal {
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  left: 50%;
+  max-height: 80%;
+  max-width: 70%;
+  overflow: hidden;
+  position: fixed;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+}
+
+.modal-header {
+  background-color: #2296f3;
+  border-bottom: 1px solid #ddd;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 18px;
+  font-weight: bold;
+  padding: 15px 20px;
+  position: sticky;
+  text-align: center;
+  top: 0;
+  z-index: 10;
+}
+
+.modal-body {
+  flex: 1;
+  overflow: auto;
+  padding: 20px;
+}
+
+.modal-body-content {
+  height: 500px;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: auto;
+}
+
+.modal-body-content h2 {
+  margin-top: 2rem;
+}
+
+.modal-body-content h4 {
+  margin-top: 2rem;
+}
+
+.modal-body-content strong {
+  font-size: 16px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  margin-left: 1rem;
+}
+
+.modal-body-content strong:first-of-type {
+  display: block;
+  font-size: 18px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+  text-decoration: underline;
+}
+
+.modal-content h1,
+.modal-content h2,
+.modal-content h3 {
+  margin-bottom: 10px;
+}
+
+.modal-content p {
+  font-family: "Georgia", serif;
+  line-height: 1.6;
+  margin-bottom: 15px;
+}
+
+.modal-content ul {
+  list-style-type: disc;
+  margin-left: 20px;
+  margin-top: 8px;
+}
+
+.modal-content a {
+  color: #2296f3;
+  text-decoration: none;
+}
+
+.modal-content a:hover {
+  text-decoration: underline;
+}
+
+.modal-footer {
+  background-color: #f1f1f1;
+  border-top: 1px solid #ddd;
+  bottom: 0;
+  padding: 10px;
+  position: sticky;
+  text-align: center;
+  z-index: 1;
+}
+
+button.close-btn {
+  background-color: #2296f3;
+  border-radius: 5px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 10px 20px;
+  transition: background-color 0.3s ease;
+}
+
+button.close-btn:hover {
+  background-color: #0056b3;
+}

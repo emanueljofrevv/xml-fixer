@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   xml-fixer-backend:
     build: ./xml-fixer-backend
@@ -7,9 +5,11 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./xml-fixer-backend/public:/usr/src/app/public
+      - ./xml-fixer-backend:/usr/app
     networks:
       - xml-fixer-network
+    env_file:
+      - ./xml-fixer-backend/.env
 
   xml-fixer-frontend:
     build: ./xml-fixer-frontend

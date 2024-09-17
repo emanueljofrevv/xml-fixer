@@ -9,6 +9,17 @@ let mainWindow;
 let serverProcess = null; // To store the server process
 const isDebug = process.env.NODE_ENV === 'development';
 
+const serverPath = isDebug ? __dirname : process.resourcesPath;
+const logDir = path.join(serverPath, 'logs');
+if (!fs.existsSync(logDir)) {
+    fs.mkdirSync(logDir);
+}
+
+const output = fs.createWriteStream(path.join(logDir, 'stdout.log'));
+const errorOutput = fs.createWriteStream(path.join(logDir, 'stderr.log'));
+// custom simple logger
+const logger = new console.Console(output, errorOutput);
+
 // Function to load environment variables from env.json
 function loadEnvFromFile() {
     const envFilePath = path.resolve(process.resourcesPath, 'env.json');
@@ -19,6 +30,7 @@ function loadEnvFromFile() {
             Object.assign(process.env, envVars);
         } catch (error) {
             console.error('Error parsing env.json:', error);
+            logger.log('Error parsing env.json:', error);
         }
     } else {
         console.warn('env.json file not found.');
@@ -38,6 +50,7 @@ function stopServer() {
             exec(killCommand, (err, stdout, stderr) => {
                 if (err) {
                     console.error(`Error stopping server: ${stderr}`);
+                    logger.log(`Error stopping server: ${stderr}`);
                     return reject(err);
                 }
                 console.log(`Server stopped successfully. ${stdout}`);
@@ -69,7 +82,6 @@ app.whenReady().then(() => {
     }
 
     // Start the Express server
-    const serverPath = isDebug ? __dirname : process.resourcesPath;
     const serverScript = path.join(serverPath, 'xml-fixer-backend', 'server.js');
 
     serverProcess = exec(
@@ -78,6 +90,7 @@ app.whenReady().then(() => {
         (err, stdout, stderr) => {
             if (err) {
                 console.error(`Error starting server: ${stderr}`);
+                logger.log(`Error starting server: ${stderr}`);
                 return;
             }
             console.log(stdout);

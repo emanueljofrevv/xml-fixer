@@ -1,0 +1,75 @@
+.file-upload {
+  align-items: center;
+  background: linear-gradient(135deg, #ecf0f3, #e0eafc);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  padding: 10px 0;
+  width: 100%;
+  z-index: 5;
+}
+
+.table-container {
+  height: calc(100vh - 120px);
+  overflow-y: auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  max-height: 400px;
+}
+
+.upload-container {
+  align-items: center;
+  background-color: #f7f9fc;
+  border-radius: 8px;
+  border: 2px dashed #022f5a;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 20px;
+  text-align: center;
+  width: 400px;
+}
+
+.upload-instruction {
+  color: #022f5a;
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0 0 10px;
+}
+
+.file-input {
+  display: none;
+}
+
+.upload-btn {
+  background-color: #2296f3;
+  border-radius: 4px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  margin-top: 10px;
+  padding: 10px 20px;
+  transition: 0.3s;
+}
+
+.upload-btn:hover {
+  background-color: #0056b3;
+}
+
+.file-upload .delete-all-btn {
+  background-color: #dc3545;
+  border-radius: 4px;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  padding: 10px 15px;
+  transition: 0.3s;
+}
+
+.file-upload .delete-all-btn:hover {
+  background-color: #c82333;
+}
